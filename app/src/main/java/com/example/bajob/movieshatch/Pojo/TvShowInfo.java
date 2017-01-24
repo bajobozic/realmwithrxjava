@@ -37,10 +37,10 @@ public class TvShowInfo extends RealmObject {
     private String firstAirDate;
     @SerializedName("origin_country")
     @Expose
-    private RealmList<RealmString> originCountry = null;
+    private String originCountry = null;
     @SerializedName("genre_ids")
     @Expose
-    private RealmList<RealmInteger> genreIds = null;
+    private String genreIds = null;
     @SerializedName("original_language")
     @Expose
     private String originalLanguage;
@@ -110,19 +110,19 @@ public class TvShowInfo extends RealmObject {
         this.firstAirDate = firstAirDate;
     }
 
-    public RealmList<RealmString> getOriginCountry() {
+    public String getOriginCountry() {
         return originCountry;
     }
 
-    public void setOriginCountry(RealmList<RealmString> originCountry) {
+    public void setOriginCountry(String originCountry) {
         this.originCountry = originCountry;
     }
 
-    public RealmList<RealmInteger> getGenreIds() {
+    public String getGenreIds() {
         return genreIds;
     }
 
-    public void setGenreIds(RealmList<RealmInteger> genreIds) {
+    public void setGenreIds(String genreIds) {
         this.genreIds = genreIds;
     }
 

@@ -7,20 +7,29 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.bajob.movieshatch.Pojo.MovieInfo;
+import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
+import com.example.bajob.movieshatch.Pojo.TvShowInfo;
 import com.squareup.picasso.Picasso;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmResults;
 
 /**
  * Created by bajob on 1/19/2017.
  */
 public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Adapter<TdbMoviesAdapter.MoviesHolder> {
-    private List<MovieInfo> movieInfoList = Collections.emptyList();
+    private List<TvShowInfo> movieInfoList = new ArrayList<>();
+    //private RealmResults<TopRatedTvShows> element;
+    public TdbMoviesAdapter(/*RealmResults<TopRatedTvShows> element*/) {
+      /*  this.element=element;
+        for (int i = 0; i < this.element.size(); i++) {
+            movieInfoList.addAll(this.element.get(i).getResults());
+        }*/
+    }
 
     @Override
     public MoviesHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -36,7 +45,7 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
                 .fit()
                 .centerCrop()
                 .into(holder.imageView);
-        holder.textView.setText(movieInfoList.get(position).getTitle());
+        holder.textView.setText(movieInfoList.get(position).getOriginalName());
         holder.textView1.setText(movieInfoList.get(position).getOverview());
     }
 
@@ -45,8 +54,11 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
         return movieInfoList.size();
     }
 
-    public void setMovieInfoList(final List<MovieInfo> movieInfoList) {
-        this.movieInfoList = movieInfoList;
+    public void setMovieInfoList(final RealmResults<TopRatedTvShows> element,final Integer page) {
+        this.movieInfoList.clear();
+        for (int i = 0; i < page; i++) {
+            this.movieInfoList.addAll(element.get(i).getResults());
+        }
         notifyDataSetChanged();
     }
 
@@ -57,6 +69,7 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
         TextView textView;
         @BindView(R.id.textView8)
         TextView textView1;
+
         public MoviesHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

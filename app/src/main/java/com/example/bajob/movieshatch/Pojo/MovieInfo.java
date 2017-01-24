@@ -27,7 +27,7 @@ public class MovieInfo extends RealmObject{
     private String releaseDate;
     @SerializedName("genre_ids")
     @Expose
-    private RealmList<RealmInteger> genreIds = null;
+    private String genreIds;
     @SerializedName("id")
     @Expose
     @PrimaryKey
@@ -89,11 +89,11 @@ public class MovieInfo extends RealmObject{
         this.releaseDate = releaseDate;
     }
 
-    public RealmList<RealmInteger> getGenreIds() {
+    public String getGenreIds() {
         return genreIds;
     }
 
-    public void setGenreIds(RealmList<RealmInteger> genreIds) {
+    public void setGenreIds(String genreIds) {
         this.genreIds = genreIds;
     }
 

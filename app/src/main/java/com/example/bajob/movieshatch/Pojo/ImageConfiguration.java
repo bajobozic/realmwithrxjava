@@ -13,9 +13,14 @@ public class ImageConfiguration {
     @SerializedName("images")
     @Expose
     private MovieDbImages images;
-    @SerializedName("change_keys")
-    @Expose
-    private RealmList<RealmString> changeKeys = null;
+
+    public String getChangeKeys() {
+        return changeKeys;
+    }
+
+    public void setChangeKeys(String changeKeys) {
+        this.changeKeys = changeKeys;
+    }
 
     public MovieDbImages getImages() {
         return images;
@@ -25,11 +30,9 @@ public class ImageConfiguration {
         this.images = images;
     }
 
-    public RealmList<RealmString> getChangeKeys() {
-        return changeKeys;
-    }
+    @SerializedName("change_keys")
+    @Expose
+    private String changeKeys;
 
-    public void setChangeKeys(RealmList<RealmString> changeKeys) {
-        this.changeKeys = changeKeys;
-    }
+
 }

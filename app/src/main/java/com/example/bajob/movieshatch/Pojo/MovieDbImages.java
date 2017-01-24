@@ -3,8 +3,6 @@ package com.example.bajob.movieshatch.Pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import io.realm.RealmList;
-
 /**
  * Created by bajob on 1/19/2017.
  */
@@ -17,19 +15,19 @@ public class MovieDbImages {
     private String secureBaseUrl;
     @SerializedName("backdrop_sizes")
     @Expose
-    private RealmList<RealmString> backdropSizes = null;
+    private String backdropSizes = null;
     @SerializedName("logo_sizes")
     @Expose
-    private RealmList<RealmString> logoSizes = null;
+    private String logoSizes = null;
     @SerializedName("poster_sizes")
     @Expose
-    private RealmList<RealmString> posterSizes = null;
+    private String posterSizes = null;
     @SerializedName("profile_sizes")
     @Expose
-    private RealmList<RealmString> profileSizes = null;
+    private String profileSizes = null;
     @SerializedName("still_sizes")
     @Expose
-    private RealmList<RealmString> stillSizes = null;
+    private String stillSizes = null;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -47,43 +45,43 @@ public class MovieDbImages {
         this.secureBaseUrl = secureBaseUrl;
     }
 
-    public RealmList<RealmString> getBackdropSizes() {
+    public String getBackdropSizes() {
         return backdropSizes;
     }
 
-    public void setBackdropSizes(RealmList<RealmString> backdropSizes) {
+    public void setBackdropSizes(String backdropSizes) {
         this.backdropSizes = backdropSizes;
     }
 
-    public RealmList<RealmString> getLogoSizes() {
+    public String getLogoSizes() {
         return logoSizes;
     }
 
-    public void setLogoSizes(RealmList<RealmString> logoSizes) {
+    public void setLogoSizes(String logoSizes) {
         this.logoSizes = logoSizes;
     }
 
-    public RealmList<RealmString> getPosterSizes() {
+    public String getPosterSizes() {
         return posterSizes;
     }
 
-    public void setPosterSizes(RealmList<RealmString> posterSizes) {
+    public void setPosterSizes(String posterSizes) {
         this.posterSizes = posterSizes;
     }
 
-    public RealmList<RealmString> getProfileSizes() {
+    public String getProfileSizes() {
         return profileSizes;
     }
 
-    public void setProfileSizes(RealmList<RealmString> profileSizes) {
+    public void setProfileSizes(String profileSizes) {
         this.profileSizes = profileSizes;
     }
 
-    public RealmList<RealmString> getStillSizes() {
+    public String getStillSizes() {
         return stillSizes;
     }
 
-    public void setStillSizes(RealmList<RealmString> stillSizes) {
+    public void setStillSizes(String stillSizes) {
         this.stillSizes = stillSizes;
     }
 }

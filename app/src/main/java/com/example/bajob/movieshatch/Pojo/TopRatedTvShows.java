@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by bajob on 1/18/2017.
@@ -14,6 +15,7 @@ import io.realm.RealmObject;
 public class TopRatedTvShows extends RealmObject{
     @SerializedName("page")
     @Expose
+    @PrimaryKey
     private Integer page;
     @SerializedName("results")
     @Expose

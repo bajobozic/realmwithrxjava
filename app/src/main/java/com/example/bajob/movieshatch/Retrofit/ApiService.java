@@ -18,7 +18,7 @@ import rx.Observable;
 
 public interface ApiService {
     @GET("tv/top_rated")
-    Observable<TopRatedTvShows> getTopRateedTvShows(@Query("language") String language, @Query("page") String page);
+    Observable<TopRatedTvShows> getTopRateedTvShows(@Query("language") String language, @Query("page") Integer page);
     //language=en-US&page=1
 
     @GET("tv/tv_id")

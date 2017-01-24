@@ -1,22 +1,23 @@
 package com.example.bajob.movieshatch.Retrofit;
 
+import android.text.TextUtils;
+
 import com.example.bajob.movieshatch.BuildConfig;
-import com.example.bajob.movieshatch.Pojo.RealmDouble;
-import com.example.bajob.movieshatch.Pojo.RealmInteger;
-import com.example.bajob.movieshatch.Pojo.RealmString;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -49,12 +50,7 @@ public class RetrofitService {
                         return chain.proceed(newRequest);
                     }
                 });
-        Type typeString = new TypeToken<RealmList<RealmString>>() {
-        }.getType();
-        Type typeInteger = new TypeToken<RealmList<RealmInteger>>() {
-        }.getType();
-        Type typeDouble = new TypeToken<RealmList<RealmDouble>>() {
-        }.getType();
+
         GsonBuilder gsonBuilder = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(FieldAttributes f) {
@@ -65,61 +61,7 @@ public class RetrofitService {
             public boolean shouldSkipClass(Class<?> clazz) {
                 return false;
             }
-        })
-                .registerTypeAdapter(typeString, new TypeAdapter<RealmList<RealmString>>() {
-
-                    @Override
-                    public void write(JsonWriter out, RealmList<RealmString> value) throws IOException {
-
-                    }
-
-                    @Override
-                    public RealmList<RealmString> read(JsonReader in) throws IOException {
-                        RealmList<RealmString> result = new RealmList<>();
-                        in.beginArray();
-                        while (in.hasNext()) {
-                            RealmString val = new RealmString(in.nextString());
-                            result.add(val);
-                        }
-                        in.endArray();
-                        return result;
-                    }
-                }).registerTypeAdapter(typeInteger, new TypeAdapter<RealmList<RealmInteger>>() {
-                    @Override
-                    public void write(JsonWriter out, RealmList<RealmInteger> value) throws IOException {
-
-                    }
-
-                    @Override
-                    public RealmList<RealmInteger> read(JsonReader in) throws IOException {
-                        RealmList<RealmInteger> result = new RealmList<RealmInteger>();
-                        in.beginArray();
-                        while (in.hasNext()) {
-                            RealmInteger val = new RealmInteger(in.nextInt());
-                            result.add(val);
-                        }
-                        in.endArray();
-                        return result;
-                    }
-                })
-                .registerTypeAdapter(typeDouble, new TypeAdapter<RealmList<RealmDouble>>() {
-                    @Override
-                    public void write(JsonWriter out, RealmList<RealmDouble> value) throws IOException {
-
-                    }
-
-                    @Override
-                    public RealmList<RealmDouble> read(JsonReader in) throws IOException {
-                        RealmList<RealmDouble> result = new RealmList<RealmDouble>();
-                        in.beginArray();
-                        while (in.hasNext()) {
-                            RealmDouble val = new RealmDouble(in.nextDouble());
-                            result.add(val);
-                        }
-                        in.endArray();
-                        return result;
-                    }
-                });
+        }).registerTypeAdapter(String.class, new PrimitiveListDeserializer());
 
 
         return new Retrofit.Builder()
@@ -135,6 +77,35 @@ public class RetrofitService {
             apiService = createRetrofit().create(ApiService.class);
         }
         return apiService;
+    }
+
+    private static final class PrimitiveListDeserializer implements JsonDeserializer<String> {
+        @Override
+        public String deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            String result = null;
+            if (json.isJsonArray()) {
+                final JsonArray asJsonArray = json.getAsJsonArray();
+                List<String> list = new ArrayList<>();
+                Iterator<JsonElement> elementIterator = asJsonArray.iterator();
+                while (elementIterator.hasNext()) {
+                    JsonElement element = elementIterator.next();
+                    if (element.isJsonPrimitive()) {
+                        if (element.getAsJsonPrimitive().isString()) {
+                            final String asString = element.getAsString();
+                            list.add(asString);
+                        } else if (element.getAsJsonPrimitive().isNumber()) {
+                            list.add(element.getAsNumber().toString());
+                        }
+                    } else if (element.isJsonObject()) {
+                        return element.getAsString();
+                    }
+                }
+                result = TextUtils.join(", ", list);
+            } else {
+                result = json.getAsString();
+            }
+            return result;
+        }
     }
 
 

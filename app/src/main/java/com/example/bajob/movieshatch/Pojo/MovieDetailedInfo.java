@@ -105,14 +105,6 @@ public class MovieDetailedInfo extends RealmObject{
         this.backdropPath = backdropPath;
     }
 
-    /*public Object getBelongsToCollection() {
-        return belongsToCollection;
-    }
-
-    public void setBelongsToCollection(Object belongsToCollection) {
-        this.belongsToCollection = belongsToCollection;
-    }*/
-
     public Integer getBudget() {
         return budget;
     }
