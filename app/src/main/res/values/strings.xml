@@ -3,5 +3,4 @@
     <string name="app_key">**************************************</string>
     <string name="app_token">*************************************************************************************************************</string>
     <string name="app_base_url">https://api.themoviedb.org/3/movie/</string>
-   <!-- <string name="app_base_url">https://api.themoviedb.org/3/movie/550?api_key=0ceccaa7727e2dc6a565b13065039df7</string>-->
 </resources>
