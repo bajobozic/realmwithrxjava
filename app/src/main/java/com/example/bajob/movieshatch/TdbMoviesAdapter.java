@@ -1,6 +1,7 @@
 package com.example.bajob.movieshatch;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,6 @@ import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 import com.example.bajob.movieshatch.Pojo.TvShowInfo;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
@@ -22,13 +20,14 @@ import io.realm.RealmResults;
  * Created by bajob on 1/19/2017.
  */
 public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Adapter<TdbMoviesAdapter.MoviesHolder> {
-    private List<TvShowInfo> movieInfoList = new ArrayList<>();
-    //private RealmResults<TopRatedTvShows> element;
-    public TdbMoviesAdapter(/*RealmResults<TopRatedTvShows> element*/) {
-      /*  this.element=element;
-        for (int i = 0; i < this.element.size(); i++) {
-            movieInfoList.addAll(this.element.get(i).getResults());
-        }*/
+    private RealmResults<TopRatedTvShows> element;
+    private int maxPageResultNum;
+    private int cachedListSize;
+
+    public TdbMoviesAdapter(RealmResults<TopRatedTvShows> element) {
+        this.element = element;
+        this.cachedListSize = 0;
+        this.maxPageResultNum = 0;
     }
 
     @Override
@@ -38,28 +37,50 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
 
     @Override
     public void onBindViewHolder(MoviesHolder holder, int position) {
-        final String posterPath = movieInfoList.get(position).getPosterPath();
-        Picasso.with(holder.itemView.getContext()).load(posterPath)
-                .placeholder(R.drawable.leak_canary_icon)
-                .error(R.drawable.leak_canary_icon)
-                .fit()
-                .centerCrop()
-                .into(holder.imageView);
-        holder.textView.setText(movieInfoList.get(position).getOriginalName());
-        holder.textView1.setText(movieInfoList.get(position).getOverview());
+        final TvShowInfo listElement = getListElement(position);
+        if (listElement != null) {
+            final String posterPath = listElement.getPosterPath();
+            Picasso.with(holder.itemView.getContext()).load(posterPath)
+                    .placeholder(R.drawable.leak_canary_icon)
+                    .error(R.drawable.leak_canary_icon)
+                    .fit()
+                    .centerCrop()
+                    .into(holder.imageView);
+            holder.textView.setText(listElement.getOriginalName());
+            holder.textView1.setText(listElement.getOverview());
+        }
     }
 
     @Override
     public int getItemCount() {
-        return movieInfoList.size();
+        cachedListSize = getListSize();
+        return cachedListSize;
     }
 
-    public void setMovieInfoList(final RealmResults<TopRatedTvShows> element,final Integer page) {
-        this.movieInfoList.clear();
-        for (int i = 0; i < page; i++) {
-            this.movieInfoList.addAll(element.get(i).getResults());
+    private int getListSize() {
+        int size = 0;
+        for (int i = 0; i < element.size(); i++) {
+            if (element.get(i).getResults() != null) {
+                int temp = element.get(i).getResults().size();
+                size += temp;
+                maxPageResultNum = Math.max(maxPageResultNum, temp);
+            }
         }
-        notifyDataSetChanged();
+        return size;
+    }
+
+    private TvShowInfo getListElement(int position) {
+        if (cachedListSize > 0) {
+            int currentPage;
+            if (position == 0 || maxPageResultNum > position) {
+                currentPage = 0;
+            } else {
+                currentPage = (int) Math.ceil(position / maxPageResultNum);
+            }
+            return element.get(currentPage).getResults().get(position % maxPageResultNum);
+        }
+
+        return null;
     }
 
     static class MoviesHolder extends RecyclerView.ViewHolder {

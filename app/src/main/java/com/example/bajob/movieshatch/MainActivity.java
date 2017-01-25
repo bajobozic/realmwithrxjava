@@ -42,9 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private RealmChangeListener<RealmResults<TopRatedTvShows>> trmChangeListener = new RealmChangeListener<RealmResults<TopRatedTvShows>>() {
         @Override
         public void onChange(RealmResults<TopRatedTvShows> element) {
-            //update UI here
-            if (element.size() > 0)
-                ((TdbMoviesAdapter) adapter).setMovieInfoList(element,page);
+            adapter.notifyDataSetChanged();
         }
     };
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
@@ -91,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (subscription != null && !subscription.isUnsubscribed())
             subscription.unsubscribe();
+        topRatedMovies.removeChangeListener(trmChangeListener);
         realmUi.close();
         super.onDestroy();
     }
@@ -134,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
-        adapter = new TdbMoviesAdapter();
+        adapter = new TdbMoviesAdapter(topRatedMovies);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(scrollListener);
@@ -156,18 +155,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private TopRatedTvShows readFromRealm(final Integer integer) {
+   /* private TopRatedTvShows readFromRealm(final Integer integer) {
         TopRatedTvShows topRatedMovies;
         topRatedMovies = realmUi.where(TopRatedTvShows.class).equalTo("page", integer).findFirst();
         return topRatedMovies;
 
-    }
-
-     /* SpokenLanguage spokenLanguage = new SpokenLanguage();
-        spokenLanguage.setIso6391("de");
-        spokenLanguage.setName("nemacki");
-        Gson gson = new Gson();
-        String json=gson.toJson(spokenLanguage);
-        Log.d(TAG, "Created object is: "+spokenLanguage.toString());
-        Log.d(TAG, "Created json is: "+json);*/
+    }*/
 }
