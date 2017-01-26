@@ -1,8 +1,13 @@
 package com.example.bajob.movieshatch.Pojo;
 
+
+import android.text.TextUtils;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -12,19 +17,20 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by bajob on 1/18/2017.
  */
-public class TvShowDetailedInfo extends RealmObject{
-    @SerializedName("adult")
-    @Expose
-    private Boolean adult;
+public class TvShowDetailedInfo extends RealmObject {
+
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;
-   /* @SerializedName("belongs_to_collection")
+    @SerializedName("created_by")
     @Expose
-    private Object belongsToCollection;*/
-    @SerializedName("budget")
+    private RealmList<CreatedBy> createdBy = null;
+    @SerializedName("episode_run_time")
     @Expose
-    private Integer budget;
+    private String episodeRunTime = null;
+    @SerializedName("first_air_date")
+    @Expose
+    private String firstAirDate;
     @SerializedName("genres")
     @Expose
     private RealmList<Genre> genres = null;
@@ -35,15 +41,36 @@ public class TvShowDetailedInfo extends RealmObject{
     @Expose
     @PrimaryKey
     private Integer id;
-    @SerializedName("imdb_id")
+    @SerializedName("in_production")
     @Expose
-    private String imdbId;
+    private Boolean inProduction;
+    @SerializedName("languages")
+    @Expose
+    private String languages = null;
+    @SerializedName("last_air_date")
+    @Expose
+    private String lastAirDate;
+    @SerializedName("name")
+    @Expose
+    private String name;
+    @SerializedName("networks")
+    @Expose
+    private RealmList<TvNetwork> networks = null;
+    @SerializedName("number_of_episodes")
+    @Expose
+    private Integer numberOfEpisodes;
+    @SerializedName("number_of_seasons")
+    @Expose
+    private Integer numberOfSeasons;
+    @SerializedName("origin_country")
+    @Expose
+    private String originCountry = null;
     @SerializedName("original_language")
     @Expose
     private String originalLanguage;
-    @SerializedName("original_title")
+    @SerializedName("original_name")
     @Expose
-    private String originalTitle;
+    private String originalName;
     @SerializedName("overview")
     @Expose
     private String overview;
@@ -56,33 +83,15 @@ public class TvShowDetailedInfo extends RealmObject{
     @SerializedName("production_companies")
     @Expose
     private RealmList<ProductionCompany> productionCompanies = null;
-    @SerializedName("production_countries")
+    @SerializedName("seasons")
     @Expose
-    private RealmList<ProductionCountry> productionCountries = null;
-    @SerializedName("release_date")
-    @Expose
-    private String releaseDate;
-    @SerializedName("revenue")
-    @Expose
-    private Integer revenue;
-    @SerializedName("runtime")
-    @Expose
-    private Integer runtime;
-    @SerializedName("spoken_languages")
-    @Expose
-    private RealmList<SpokenLanguage> spokenLanguages = null;
+    private RealmList<Season> seasons = null;
     @SerializedName("status")
     @Expose
     private String status;
-    @SerializedName("tagline")
+    @SerializedName("type")
     @Expose
-    private String tagline;
-    @SerializedName("title")
-    @Expose
-    private String title;
-    @SerializedName("video")
-    @Expose
-    private Boolean video;
+    private String type;
     @SerializedName("vote_average")
     @Expose
     private Double voteAverage;
@@ -90,12 +99,31 @@ public class TvShowDetailedInfo extends RealmObject{
     @Expose
     private Integer voteCount;
 
-    public Boolean getAdult() {
-        return adult;
+    public List<Integer> getEpisodeRunTime() {
+        String[] strings = TextUtils.split(episodeRunTime, ", ");
+        List<Integer> integers = new ArrayList<>(strings.length);
+        if (strings.length > 0) {
+            for (int i = 0; i < strings.length; i++) {
+                integers.add(Integer.valueOf(strings[i]));
+            }
+        }
+        return integers;
     }
 
-    public void setAdult(Boolean adult) {
-        this.adult = adult;
+    public void setEpisodeRunTime(List<Integer> episodeRunTime) {
+        List<String> strings = new ArrayList<>(episodeRunTime.size());
+        for (int i = 0; i < episodeRunTime.size(); i++) {
+            strings.add(episodeRunTime.get(i).toString());
+        }
+        this.episodeRunTime = TextUtils.join(", ", strings);
+    }
+
+    public List<String> getLanguages() {
+        return Arrays.asList(TextUtils.split(languages, ", "));
+    }
+
+    public void setLanguages(List<String> languages) {
+        this.languages = TextUtils.join(", ", languages);
     }
 
     public String getBackdropPath() {
@@ -106,12 +134,24 @@ public class TvShowDetailedInfo extends RealmObject{
         this.backdropPath = backdropPath;
     }
 
-    public Integer getBudget() {
-        return budget;
+    public RealmList<CreatedBy> getCreatedBy() {
+        return createdBy;
     }
 
-    public void setBudget(Integer budget) {
-        this.budget = budget;
+    public void setCreatedBy(RealmList<CreatedBy> createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setEpisodeRunTime(String episodeRunTime) {
+        this.episodeRunTime = episodeRunTime;
+    }
+
+    public String getFirstAirDate() {
+        return firstAirDate;
+    }
+
+    public void setFirstAirDate(String firstAirDate) {
+        this.firstAirDate = firstAirDate;
     }
 
     public RealmList<Genre> getGenres() {
@@ -138,12 +178,60 @@ public class TvShowDetailedInfo extends RealmObject{
         this.id = id;
     }
 
-    public String getImdbId() {
-        return imdbId;
+    public Boolean getInProduction() {
+        return inProduction;
     }
 
-    public void setImdbId(String imdbId) {
-        this.imdbId = imdbId;
+    public void setInProduction(Boolean inProduction) {
+        this.inProduction = inProduction;
+    }
+
+    public void setLanguages(String languages) {
+        this.languages = languages;
+    }
+
+    public String getLastAirDate() {
+        return lastAirDate;
+    }
+
+    public void setLastAirDate(String lastAirDate) {
+        this.lastAirDate = lastAirDate;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public RealmList<TvNetwork> getNetworks() {
+        return networks;
+    }
+
+    public void setNetworks(RealmList<TvNetwork> networks) {
+        this.networks = networks;
+    }
+
+    public Integer getNumberOfEpisodes() {
+        return numberOfEpisodes;
+    }
+
+    public void setNumberOfEpisodes(Integer numberOfEpisodes) {
+        this.numberOfEpisodes = numberOfEpisodes;
+    }
+
+    public Integer getNumberOfSeasons() {
+        return numberOfSeasons;
+    }
+
+    public void setNumberOfSeasons(Integer numberOfSeasons) {
+        this.numberOfSeasons = numberOfSeasons;
+    }
+
+    public void setOriginCountry(String originCountry) {
+        this.originCountry = originCountry;
     }
 
     public String getOriginalLanguage() {
@@ -154,12 +242,12 @@ public class TvShowDetailedInfo extends RealmObject{
         this.originalLanguage = originalLanguage;
     }
 
-    public String getOriginalTitle() {
-        return originalTitle;
+    public String getOriginalName() {
+        return originalName;
     }
 
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
+    public void setOriginalName(String originalName) {
+        this.originalName = originalName;
     }
 
     public String getOverview() {
@@ -194,44 +282,12 @@ public class TvShowDetailedInfo extends RealmObject{
         this.productionCompanies = productionCompanies;
     }
 
-    public RealmList<ProductionCountry> getProductionCountries() {
-        return productionCountries;
+    public RealmList<Season> getSeasons() {
+        return seasons;
     }
 
-    public void setProductionCountries(RealmList<ProductionCountry> productionCountries) {
-        this.productionCountries = productionCountries;
-    }
-
-    public String getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public Integer getRevenue() {
-        return revenue;
-    }
-
-    public void setRevenue(Integer revenue) {
-        this.revenue = revenue;
-    }
-
-    public Integer getRuntime() {
-        return runtime;
-    }
-
-    public void setRuntime(Integer runtime) {
-        this.runtime = runtime;
-    }
-
-    public RealmList<SpokenLanguage> getSpokenLanguages() {
-        return spokenLanguages;
-    }
-
-    public void setSpokenLanguages(RealmList<SpokenLanguage> spokenLanguages) {
-        this.spokenLanguages = spokenLanguages;
+    public void setSeasons(RealmList<Season> seasons) {
+        this.seasons = seasons;
     }
 
     public String getStatus() {
@@ -242,28 +298,12 @@ public class TvShowDetailedInfo extends RealmObject{
         this.status = status;
     }
 
-    public String getTagline() {
-        return tagline;
+    public String getType() {
+        return type;
     }
 
-    public void setTagline(String tagline) {
-        this.tagline = tagline;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Boolean getVideo() {
-        return video;
-    }
-
-    public void setVideo(Boolean video) {
-        this.video = video;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Double getVoteAverage() {
@@ -281,4 +321,14 @@ public class TvShowDetailedInfo extends RealmObject{
     public void setVoteCount(Integer voteCount) {
         this.voteCount = voteCount;
     }
+
+    public List<String> getOriginCountry() {
+        return Arrays.asList(TextUtils.split(originCountry,", "));
+    }
+
+    public void setOriginCountry(List<String> originCountry) {
+        this.originCountry = TextUtils.join(", ", originCountry);
+    }
 }
+
+

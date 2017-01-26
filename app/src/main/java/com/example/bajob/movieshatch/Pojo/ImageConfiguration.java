@@ -14,6 +14,10 @@ public class ImageConfiguration {
     @Expose
     private MovieDbImages images;
 
+    @SerializedName("change_keys")
+    @Expose
+    private String changeKeys;
+
     public String getChangeKeys() {
         return changeKeys;
     }
@@ -29,10 +33,6 @@ public class ImageConfiguration {
     public void setImages(MovieDbImages images) {
         this.images = images;
     }
-
-    @SerializedName("change_keys")
-    @Expose
-    private String changeKeys;
 
 
 }

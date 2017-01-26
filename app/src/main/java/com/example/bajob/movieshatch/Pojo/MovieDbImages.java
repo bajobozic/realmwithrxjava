@@ -1,7 +1,12 @@
 package com.example.bajob.movieshatch.Pojo;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by bajob on 1/19/2017.
@@ -45,43 +50,43 @@ public class MovieDbImages {
         this.secureBaseUrl = secureBaseUrl;
     }
 
-    public String getBackdropSizes() {
-        return backdropSizes;
+    public List<String> getBackdropSizes() {
+        return Arrays.asList(TextUtils.split(backdropSizes, ", "));
     }
 
-    public void setBackdropSizes(String backdropSizes) {
-        this.backdropSizes = backdropSizes;
+    public void setBackdropSizes(List<String> backdropSizes) {
+        this.backdropSizes = TextUtils.join(", ",backdropSizes);
     }
 
-    public String getLogoSizes() {
-        return logoSizes;
+    public List<String> getLogoSizes() {
+        return Arrays.asList(TextUtils.split(logoSizes, ", "));
     }
 
-    public void setLogoSizes(String logoSizes) {
-        this.logoSizes = logoSizes;
+    public void setLogoSizes(List<String> logoSizes) {
+        this.logoSizes = TextUtils.join(", ",logoSizes);
     }
 
-    public String getPosterSizes() {
-        return posterSizes;
+    public List<String> getPosterSizes() {
+        return Arrays.asList(TextUtils.split(posterSizes, ", "));
     }
 
-    public void setPosterSizes(String posterSizes) {
-        this.posterSizes = posterSizes;
+    public void setPosterSizes(List<String> posterSizes) {
+        this.posterSizes = TextUtils.join(", ",posterSizes);
     }
 
-    public String getProfileSizes() {
-        return profileSizes;
+    public List<String> getProfileSizes() {
+        return Arrays.asList(TextUtils.split(profileSizes, ", "));
     }
 
-    public void setProfileSizes(String profileSizes) {
-        this.profileSizes = profileSizes;
+    public void setProfileSizes(List<String> profileSizes) {
+        this.profileSizes = TextUtils.join(", ",profileSizes);
     }
 
-    public String getStillSizes() {
-        return stillSizes;
+    public List<String> getStillSizes() {
+        return Arrays.asList(TextUtils.split(stillSizes, ", "));
     }
 
-    public void setStillSizes(String stillSizes) {
-        this.stillSizes = stillSizes;
+    public void setStillSizes(List<String> stillSizes) {
+        this.stillSizes = TextUtils.join(", ",stillSizes);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.bajob.movieshatch;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,16 +24,17 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
     private RealmResults<TopRatedTvShows> element;
     private int maxPageResultNum;
     private int cachedListSize;
-
-    public TdbMoviesAdapter(RealmResults<TopRatedTvShows> element) {
+    private TvShowIdDelegate tvShowIdDelegate;
+    public TdbMoviesAdapter(RealmResults<TopRatedTvShows> element,TvShowIdDelegate tvShowIdDelegate) {
         this.element = element;
         this.cachedListSize = 0;
         this.maxPageResultNum = 0;
+        this.tvShowIdDelegate = tvShowIdDelegate;
     }
 
     @Override
     public MoviesHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MoviesHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.movies_item, parent, false));
+        return new MoviesHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.movies_item, parent, false),this);
     }
 
     @Override
@@ -83,7 +85,8 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
         return null;
     }
 
-    static class MoviesHolder extends RecyclerView.ViewHolder {
+    static class MoviesHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TdbMoviesAdapter adapter;
         @BindView(R.id.imageView3)
         ImageView imageView;
         @BindView(R.id.textView7)
@@ -91,10 +94,23 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
         @BindView(R.id.textView8)
         TextView textView1;
 
-        public MoviesHolder(View itemView) {
+        public MoviesHolder(View itemView,TdbMoviesAdapter adapter) {
             super(itemView);
+            this.adapter = adapter;
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            int position = getLayoutPosition();
+            adapter.tvShowIdDelegate.handleClickPosition(position);
+        }
+
+    }
+
+    interface TvShowIdDelegate {
+        void handleClickPosition(final int tvShowId);
     }
 }
 

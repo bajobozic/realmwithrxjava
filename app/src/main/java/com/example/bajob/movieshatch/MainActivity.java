@@ -1,5 +1,6 @@
 package com.example.bajob.movieshatch;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,8 @@ import android.util.Log;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 import com.example.bajob.movieshatch.Pojo.TvShowInfo;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,6 +62,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+  private TdbMoviesAdapter.TvShowIdDelegate tvShowIdDelegate = new TdbMoviesAdapter.TvShowIdDelegate() {
+      @Override
+      public void handleClickPosition(int tvShowId) {
+          Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+          //detailIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+          detailIntent.putExtra("showId", tvShowId);
+          startActivity(detailIntent);
+          finish();
+      }
+  };
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,10 +134,9 @@ public class MainActivity extends AppCompatActivity {
             TvShowInfo info = topRatedMovies.getResults().get(i);
             String posterPath = info.getPosterPath();
             String baseUrl = imageConfiguration.getImages().getBaseUrl();
-            final String posterSizes = imageConfiguration.getImages().getPosterSizes();
-            if (!TextUtils.isEmpty(posterSizes)) {
-                String[] posterSize = TextUtils.split(posterSizes, ", ");
-                String finalValue = baseUrl + posterSize[0] + posterPath;
+            final List<String> posterSizes = imageConfiguration.getImages().getPosterSizes();
+            if (posterSizes != null && posterSizes.size()>0) {
+                String finalValue = baseUrl + posterSizes.get(1) + posterPath;
                 info.setPosterPath(finalValue);
             }
         }
@@ -133,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
-        adapter = new TdbMoviesAdapter(topRatedMovies);
+        adapter = new TdbMoviesAdapter(topRatedMovies,tvShowIdDelegate);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(scrollListener);

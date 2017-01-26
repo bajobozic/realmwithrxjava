@@ -22,7 +22,7 @@ public interface ApiService {
     //language=en-US&page=1
 
     @GET("tv/tv_id")
-    Observable<TvShowDetailedInfo> getTvShowDetailedInfo(@Path("tv_id") String tvId, @Query("language") String language, @Query("append_to_response") String appendToRersponse);
+    Observable<TvShowDetailedInfo> getTvShowDetailedInfo(@Path("tv_id") Integer tvId, @Query("language") String language, @Query("append_to_response") String appendToRersponse);
 
     @GET("movie/top_rated")
     Observable<TopRatedMovies> getTopRateedMovies(@Query("language") String language, @Query("page") String page, @Query("regjion") String region);
