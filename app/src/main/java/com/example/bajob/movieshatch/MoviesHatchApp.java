@@ -3,20 +3,20 @@ package com.example.bajob.movieshatch;
 import android.app.Application;
 import android.content.Context;
 
-import com.example.bajob.movieshatch.Retrofit.ApiService;
-import com.example.bajob.movieshatch.Retrofit.RetrofitService;
+import com.example.bajob.movieshatch.DependencyInjection.ApplicationComponent;
+import com.example.bajob.movieshatch.DependencyInjection.ApplicationModule;
+import com.example.bajob.movieshatch.DependencyInjection.DaggerApplicationComponent;
+import com.example.bajob.movieshatch.DependencyInjection.NetworkModule;
+import com.example.bajob.movieshatch.DependencyInjection.RealmModule;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /**
  * Created by bajob on 1/18/2017.
  */
 
 public class MoviesHatchApp extends Application {
-    private ApiService apiService;
+    private ApplicationComponent applicationComponent;
 
     public static RefWatcher getRefWatcher(Context context) {
         MoviesHatchApp application = (MoviesHatchApp) context.getApplicationContext();
@@ -35,15 +35,14 @@ public class MoviesHatchApp extends Application {
         }
         refWatcher = LeakCanary.install(this);
         //app code gose here
-        Realm.init(this);
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(realmConfiguration);
-
-        apiService = new RetrofitService().createApiService();
-
+        applicationComponent = DaggerApplicationComponent
+                .builder()
+                .applicationModule(new ApplicationModule(this))
+                .networkModule(new NetworkModule(BuildConfig.BASE_URL))
+                .realmModule(new RealmModule()).build();
     }
 
-    public ApiService getApiService() {
-        return apiService;
+    public ApplicationComponent getApplicationComponent() {
+        return applicationComponent;
     }
 }
