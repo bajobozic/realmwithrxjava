@@ -9,7 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
+import com.example.bajob.movieshatch.Mvp.TvShowsPresenterImp;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 import com.example.bajob.movieshatch.Pojo.TvShowInfo;
@@ -36,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+    @BindView(R.id.tv_show_progress_bar)
+    ProgressBar progressBar;
 
     @Inject
     @Named("instanceRealm")
@@ -55,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private RealmChangeListener<RealmResults<TopRatedTvShows>> trmChangeListener = new RealmChangeListener<RealmResults<TopRatedTvShows>>() {
         @Override
         public void onChange(RealmResults<TopRatedTvShows> element) {
+            if (totalPages == 100000 && element.size()>0)
+                totalPages = element.get(0).getTotalPages();
             adapter.notifyDataSetChanged();
         }
     };
@@ -68,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             final int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
             if (!loading && ((itemCount - lastVisibleItemPosition) <= 5) && (page + 1) < totalPages) {
                 loading = true;
+
                 loadData(page + 1);
             }
         }
@@ -119,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData(final Integer page) {
+        progressBar.setVisibility(View.VISIBLE);
         final Observable<TopRatedTvShows> movies = apiService.getTopRateedTvShows(null, page);
         subscription = movies
                 .zipWith(apiService.getImageConfiguration(), this::getFullPosterPath)
@@ -126,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pg -> {
                         },
-                        throwable -> Log.e(TAG, "onError: ", throwable),
+                        throwable -> {
+                            stopLoading();
+                            Log.e(TAG, "onError: ", throwable);},
                         () -> {
                             stopLoading();
                             MainActivity.this.page = page;
@@ -134,8 +145,9 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
-    private boolean stopLoading() {
-        return loading = false;
+    private void stopLoading() {
+        progressBar.setVisibility(View.GONE);
+        loading = false;
     }
 
     @NonNull
