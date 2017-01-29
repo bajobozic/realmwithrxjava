@@ -14,10 +14,9 @@ import io.realm.Realm;
 public class DataSourceManager {
     ApiService apiService;
     Realm realmUi;
-
     @Inject
-    public DataSourceManager(ApiService apiService, Realm realmUi) {
-        this.apiService = apiService;
+    public DataSourceManager(Realm realmUi, ApiService apiService) {
         this.realmUi = realmUi;
+        this.apiService = apiService;
     }
 }

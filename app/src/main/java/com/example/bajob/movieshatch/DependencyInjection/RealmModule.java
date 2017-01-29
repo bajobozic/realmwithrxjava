@@ -20,9 +20,6 @@ public class RealmModule {
     @Provides
     @Named("singletonRealm")
     public Realm getSingeltonRealmUi(Application application) {
-        Realm.init(application);
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(realmConfiguration);
         return Realm.getDefaultInstance();
     }
 

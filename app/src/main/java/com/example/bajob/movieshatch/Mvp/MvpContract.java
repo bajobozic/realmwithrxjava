@@ -11,8 +11,8 @@ public interface MvpContract {
 
     }
 
-     interface MvpPresenter<V extends MvpView> {
-        void bindView(V v);
+     interface MvpPresenter<T extends MvpView> {
+        void bindView(T t);
         void unbindView();
     }
 

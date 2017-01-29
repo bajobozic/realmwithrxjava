@@ -13,10 +13,13 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.bajob.movieshatch.Mvp.TvShowsPresenterImp;
+import com.example.bajob.movieshatch.Mvp.TvShowsView;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 import com.example.bajob.movieshatch.Pojo.TvShowInfo;
 import com.example.bajob.movieshatch.Retrofit.ApiService;
+import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
+import com.jakewharton.rxbinding.view.RxView;
 
 import java.util.List;
 
@@ -31,9 +34,14 @@ import io.realm.RealmResults;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TvShowsView {
     private static final String TAG = "MainActivity";
+    private CompositeSubscription recyclerSubscription = new CompositeSubscription();
+
+    @Inject
+    TvShowsPresenterImp presenterImp;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -42,29 +50,125 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tv_show_progress_bar)
     ProgressBar progressBar;
 
-    @Inject
-    @Named("instanceRealm")
-    Realm realmUi;
-
-    @Inject
-    ApiService apiService;
-
     private RecyclerView.Adapter adapter;
 
-    private RealmResults<TopRatedTvShows> topRatedTvShows;
-    private Subscription subscription;
     private boolean loading = false;
     private Integer page = 1;
-    //just initial value,set on first load with true value from server
     private Integer totalPages = 100000;
+
+    protected void onCreate(Bundle savedInstanceState) {
+        ((MoviesHatchApp) getApplication()).getApplicationComponent().inject(this);
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            page = savedInstanceState.getInt("page", 1);
+        }
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        setupRecyclerView();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenterImp.bindView(this);
+        presenterImp.loadListData(page);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("page", page);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    /*private void loadData(final Integer page) {
+        progressBar.setVisibility(View.VISIBLE);
+        final Observable<TopRatedTvShows> movies = apiService.getTopRateedTvShows(null, page);
+        subscription = movies
+                .zipWith(apiService.getImageConfiguration(), this::getFullPosterPath)
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(this::writeToRealm)
+                .subscribe(pg -> {
+                        },
+                        throwable -> {
+                            stopLoading();
+                            Log.e(TAG, "onError: ", throwable);
+                        },
+                        () -> {
+                            stopLoading();
+                            MainActivity.this.page = page;
+                        }
+                );
+    }*/
+
+    private void stopLoading() {
+        progressBar.setVisibility(View.GONE);
+        loading = false;
+    }
+
+    /*@NonNull
+    private TopRatedTvShows getFullPosterPath(TopRatedTvShows topRatedTvShows, ImageConfiguration imageConfiguration) {
+        for (int i = 0; i < topRatedTvShows.getResults().size(); i++) {
+            TvShowInfo info = topRatedTvShows.getResults().get(i);
+            String posterPath = info.getPosterPath();
+            String baseUrl = imageConfiguration.getImages().getBaseUrl();
+            final List<String> posterSizes = imageConfiguration.getImages().getPosterSizes();
+            if (posterSizes != null && posterSizes.size() > 0) {
+                String finalValue = baseUrl + posterSizes.get(1) + posterPath;
+                info.setPosterPath(finalValue);
+            }
+        }
+        return topRatedTvShows;
+    }
+*/
+    private void setupRecyclerView() {
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        adapter = new TdbMoviesAdapter(null /*topRatedTvShows*/, tvShowIdDelegate);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+        recyclerSubscription.add(RxRecyclerView.scrollEvents(recyclerView).filter(event -> {
+            final LinearLayoutManager localLayoutManager = (LinearLayoutManager) event.view().getLayoutManager();
+            final int itemCount = localLayoutManager.getItemCount();
+            final int lastVisibleItemPosition = localLayoutManager.findLastVisibleItemPosition();
+            if (!loading && ((itemCount - lastVisibleItemPosition) <= 5) && (page + 1) < totalPages) {
+                return loading = true;
+            } else
+                return loading = false;
+        }).subscribe(recyclerViewScrollEvent -> presenterImp.loadListData(page + 1),
+                e -> Log.e(TAG, "RecyclerView:" + e.getMessage(), e),
+                () -> {
+                }
+        ));
+        //recyclerView.addOnScrollListener(scrollListener);
+    }
+
+    /*private Integer writeToRealm(final TopRatedTvShows movies) {
+        realmUi.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(movies);
+            }
+        });
+        return movies.getPage();
+
+    }*/
+
     private RealmChangeListener<RealmResults<TopRatedTvShows>> trmChangeListener = new RealmChangeListener<RealmResults<TopRatedTvShows>>() {
         @Override
         public void onChange(RealmResults<TopRatedTvShows> element) {
-            if (totalPages == 100000 && element.size()>0)
+            if (totalPages == 100000 && element.size() > 0)
                 totalPages = element.get(0).getTotalPages();
             adapter.notifyDataSetChanged();
         }
     };
+
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -76,124 +180,40 @@ public class MainActivity extends AppCompatActivity {
             if (!loading && ((itemCount - lastVisibleItemPosition) <= 5) && (page + 1) < totalPages) {
                 loading = true;
 
-                loadData(page + 1);
+                presenterImp.loadListData(page + 1);
             }
         }
     };
-
-  private TdbMoviesAdapter.TvShowIdDelegate tvShowIdDelegate = new TdbMoviesAdapter.TvShowIdDelegate() {
-      @Override
-      public void handleClickPosition(int tvShowId) {
-          Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
-          //detailIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-          detailIntent.putExtra("showId", tvShowId);
-          startActivity(detailIntent);
-          finish();
-      }
-  };
-
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ((MoviesHatchApp)getApplication()).getApplicationComponent().inject(this);
-        if (savedInstanceState != null) {
-            page = savedInstanceState.getInt("page", 1);
+    private TdbMoviesAdapter.TvShowIdDelegate tvShowIdDelegate = new TdbMoviesAdapter.TvShowIdDelegate() {
+        @Override
+        public void handleClickPosition(int tvShowId) {
+            Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+            detailIntent.putExtra("showId", tvShowId);
+            startActivity(detailIntent);
+            finish();
         }
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        initRealm();
-        setupRecyclerView();
-        loadData(page);
+    };
+
+    @Override
+    public void updateTvShowsList(TopRatedTvShows topRatedTvShows) {
+        adapter.notifyDataSetChanged();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("page", page);
-    }
+    public void showDetailActivity() {
 
-    private void initRealm() {
-        topRatedTvShows = realmUi.where(TopRatedTvShows.class).findAllAsync();
-        topRatedTvShows.addChangeListener(trmChangeListener);
     }
 
     @Override
-    protected void onDestroy() {
-        if (subscription != null && !subscription.isUnsubscribed())
-            subscription.unsubscribe();
-        topRatedTvShows.removeChangeListener(trmChangeListener);
-        realmUi.close();
-        super.onDestroy();
-    }
-
-    private void loadData(final Integer page) {
+    public void showProgress() {
+        loading = true;
         progressBar.setVisibility(View.VISIBLE);
-        final Observable<TopRatedTvShows> movies = apiService.getTopRateedTvShows(null, page);
-        subscription = movies
-                .zipWith(apiService.getImageConfiguration(), this::getFullPosterPath)
-                .map(this::writeToRealm)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pg -> {
-                        },
-                        throwable -> {
-                            stopLoading();
-                            Log.e(TAG, "onError: ", throwable);},
-                        () -> {
-                            stopLoading();
-                            MainActivity.this.page = page;
-                        }
-                );
     }
 
-    private void stopLoading() {
-        progressBar.setVisibility(View.GONE);
+    @Override
+    public void hideProgress() {
         loading = false;
-    }
-
-    @NonNull
-    private TopRatedTvShows getFullPosterPath(TopRatedTvShows topRatedTvShows, ImageConfiguration imageConfiguration) {
-        for (int i = 0; i < topRatedTvShows.getResults().size(); i++) {
-            TvShowInfo info = topRatedTvShows.getResults().get(i);
-            String posterPath = info.getPosterPath();
-            String baseUrl = imageConfiguration.getImages().getBaseUrl();
-            final List<String> posterSizes = imageConfiguration.getImages().getPosterSizes();
-            if (posterSizes != null && posterSizes.size()>0) {
-                String finalValue = baseUrl + posterSizes.get(1) + posterPath;
-                info.setPosterPath(finalValue);
-            }
-        }
-        return topRatedTvShows;
-    }
-
-    private void setupRecyclerView() {
-        recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        adapter = new TdbMoviesAdapter(topRatedTvShows,tvShowIdDelegate);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
-        recyclerView.addOnScrollListener(scrollListener);
-    }
-
-    private Integer writeToRealm(final TopRatedTvShows movies) {
-        final Realm currentThreadRealm = Realm.getDefaultInstance();
-        try {
-            currentThreadRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    realm.copyToRealmOrUpdate(movies);
-                }
-            });
-            return movies.getPage();
-        } finally {
-            currentThreadRealm.close();
-        }
+        progressBar.setVisibility(View.GONE);
 
     }
-
-   /* private TopRatedTvShows readFromRealm(final Integer integer) {
-        TopRatedTvShows topRatedTvShows;
-        topRatedTvShows = realmUi.where(TopRatedTvShows.class).equalTo("page", integer).findFirst();
-        return topRatedTvShows;
-
-    }*/
 }

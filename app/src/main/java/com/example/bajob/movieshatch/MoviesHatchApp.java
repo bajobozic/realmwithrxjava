@@ -11,6 +11,9 @@ import com.example.bajob.movieshatch.DependencyInjection.RealmModule;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 /**
  * Created by bajob on 1/18/2017.
  */
@@ -38,8 +41,11 @@ public class MoviesHatchApp extends Application {
         applicationComponent = DaggerApplicationComponent
                 .builder()
                 .applicationModule(new ApplicationModule(this))
-                .networkModule(new NetworkModule(BuildConfig.BASE_URL))
-                .realmModule(new RealmModule()).build();
+                .networkModule(new NetworkModule(BuildConfig.BASE_URL));
+
+        Realm.init(this);
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+        Realm.setDefaultConfiguration(realmConfiguration);
     }
 
     public ApplicationComponent getApplicationComponent() {

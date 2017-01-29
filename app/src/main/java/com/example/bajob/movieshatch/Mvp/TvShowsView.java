@@ -5,7 +5,7 @@ import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 /**
  * Created by bajob on 1/27/2017.
  */
- interface TvShowsView extends MvpContract.MvpView {
+ public interface TvShowsView extends MvpContract.MvpView {
     void updateTvShowsList(final TopRatedTvShows topRatedTvShows);
     void showDetailActivity();
 }
