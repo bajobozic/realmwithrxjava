@@ -41,7 +41,7 @@ public class MoviesHatchApp extends Application {
         applicationComponent = DaggerApplicationComponent
                 .builder()
                 .applicationModule(new ApplicationModule(this))
-                .networkModule(new NetworkModule(BuildConfig.BASE_URL));
+                .networkModule(new NetworkModule(BuildConfig.BASE_URL)).build();
 
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();

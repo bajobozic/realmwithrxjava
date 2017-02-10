@@ -1,7 +1,12 @@
 package com.example.bajob.movieshatch.Mvp;
 
+import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
+
 import javax.inject.Inject;
 
+import io.realm.RealmResults;
+import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
 /**
@@ -11,7 +16,8 @@ import rx.Subscription;
 public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
     Subscription subscription;
     TvShowsView view;
-    final DataSourceManager dataSourceManager;
+    DataSourceManager dataSourceManager;
+
     @Inject
     public TvShowsPresenterImp(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
@@ -20,6 +26,23 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
     @Override
     public void loadListData(Integer page) {
         view.showProgress();
+        subscription = dataSourceManager.loadData(page).subscribe(new Observer<RealmResults<TopRatedTvShows>>() {
+            @Override
+            public void onCompleted() {
+                view.hideProgress();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                view.hideProgress();
+            }
+
+            @Override
+            public void onNext(RealmResults<TopRatedTvShows> topRatedTvShowses) {
+                view.updateTvShowsList(topRatedTvShowses);
+                view.hideProgress();
+            }
+        });
     }
 
     @Override

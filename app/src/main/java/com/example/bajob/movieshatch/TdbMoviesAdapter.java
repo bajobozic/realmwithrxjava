@@ -32,6 +32,10 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
         this.tvShowIdDelegate = tvShowIdDelegate;
     }
 
+    public void setList(final RealmResults<TopRatedTvShows> element) {
+        this.element = element;
+    }
+
     @Override
     public MoviesHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MoviesHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.movies_item, parent, false),this);
@@ -55,6 +59,8 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
 
     @Override
     public int getItemCount() {
+        if (element == null)
+            return 0;
         cachedListSize = getListSize();
         return cachedListSize;
     }
