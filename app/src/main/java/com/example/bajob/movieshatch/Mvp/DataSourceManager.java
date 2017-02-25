@@ -1,8 +1,9 @@
 package com.example.bajob.movieshatch.Mvp;
 
+import android.util.Log;
+
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
-import com.example.bajob.movieshatch.Pojo.TvShowInfo;
 import com.example.bajob.movieshatch.Retrofit.ApiService;
 
 import javax.inject.Inject;
@@ -10,74 +11,107 @@ import javax.inject.Singleton;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import retrofit2.Response;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.BehaviorSubject;
 
 /**
  * Created by bajob on 1/27/2017.
  */
 @Singleton
 public class DataSourceManager {
-    private final Observable<RealmResults<TopRatedTvShows>> realmResultsObservable;
     private final ApiService apiService;
-
-    private final Realm realmUi;
+    private final BehaviorSubject<Integer> subject;
+    private Realm realmUi;
+    private Observable<RealmResults<TopRatedTvShows>> realmResults;
+    private Subscription subscription;
 
     @Inject
-    public DataSourceManager(Realm realmUi, ApiService apiService) {
-        this.realmUi = realmUi;
+    public DataSourceManager(ApiService apiService) {
         this.apiService = apiService;
-        this.realmResultsObservable = realmUi.where(TopRatedTvShows.class).findAllAsync().asObservable();
-
+        this.subject = BehaviorSubject.create(1);
+        this.realmUi = Realm.getDefaultInstance();
+        this.realmResults = realmUi
+                .where(TopRatedTvShows.class)
+                .findAllAsync()
+                .asObservable()
+                .filter(RealmResults::isValid)
+                .filter(RealmResults::isLoaded);
     }
 
-    public Observable<RealmResults<TopRatedTvShows>> loadData(Integer page) {
-        Observable.zip(apiService.getTopRateedTvShows(null, page), apiService.getImageConfiguration(), this::addPosterPath)
+    /**
+     * initial load of data,happens just once on app startup
+     *
+     * @return Observable
+     */
+    public Observable<RealmResults<TopRatedTvShows>> loadData() {
+        //on rotation realm is closed so we reinstantiate new realm instance
+        //and query realm db,other members are preserved because this is
+        //singleton class
+        if (realmUi == null || realmUi.isClosed()) {
+            realmUi = Realm.getDefaultInstance();
+            this.realmResults = realmUi
+                    .where(TopRatedTvShows.class)
+                    .findAllAsync()
+                    .asObservable()
+                    .filter(RealmResults::isValid)
+                    .filter(RealmResults::isLoaded);
+        }
+        subscription = subject
+                .distinctUntilChanged()
+                .flatMap(integer -> realmResults
+                        .map(RealmResults::size)
+                        .filter(integer1 -> integer1 < integer).map(integer1 -> integer)
+                        .doOnNext(integer1 -> Log.d("PAGE", " nUMBER: " + integer)))
+                .flatMap(integer -> Observable.zip(apiService.getTopRateedTvShows(null, integer),
+                        apiService.getImageConfiguration(),
+                        this::addPosterPath))
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(this::writeToRealm)
-                .subscribe(new Observer<TopRatedTvShows>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(TopRatedTvShows topRatedTvShows) {
-
-                    }
+                .subscribe(integer -> {
+                }, Throwable::printStackTrace, () -> {
                 });
-        return realmResultsObservable;
+        return realmResults;
     }
 
-    private TopRatedTvShows writeToRealm(TopRatedTvShows topRatedTvShows) {
-        boolean loaded;
-        realmUi.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(topRatedTvShows);
-            }
-        });
-        return topRatedTvShows;
+    void nextPage(int page) {
+        subject.onNext(page);
     }
 
-    private TopRatedTvShows addPosterPath(TopRatedTvShows t1, ImageConfiguration t2) {
-        final String baseUrl = t2.getImages().getBaseUrl();
-
-        for (int i = 0; i < t1.getResults().size(); i++) {
-            final String posterPath = t1.getResults().get(i).getPosterPath();
-            final String fullPath = baseUrl + posterPath;
-            t1.getResults().get(i).setPosterPath(fullPath);
+    void closeRealm() {
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
         }
-        return t1;
+        if (realmUi != null && !realmUi.isClosed()) {
+            realmUi.close();
+            realmUi = null;
+        }
     }
 
-    public Observable<RealmResults<TopRatedTvShows>> getRealmResultsObservable() {
-        return realmResultsObservable;
+    private Integer writeToRealm(TopRatedTvShows topRatedTvShows) {
+        realmUi.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(topRatedTvShows));
+        return topRatedTvShows.getPage();
+    }
+
+    private TopRatedTvShows addPosterPath(Response<TopRatedTvShows> t1, Response<ImageConfiguration> t2) {
+        try {
+            final String baseUrl = t2.body().getImages().getBaseUrl();
+            final String posterSize = t2.body().getImages().getPosterSizes().get(1);
+            for (int i = 0; i < t1.body().getResults().size(); i++) {
+                final String posterPath = t1.body().getResults().get(i).getPosterPath();
+                final String fullPath = baseUrl + posterSize + posterPath;
+                t1.body().getResults().get(i).setPosterPath(fullPath);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return t1.body();
+        }
+    }
+
+    private <T> Observable.Transformer<T, T> printThread() {
+        return tObservable -> tObservable.subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread());
     }
 }

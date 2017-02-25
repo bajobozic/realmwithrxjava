@@ -10,4 +10,6 @@ import io.realm.RealmResults;
  public interface TvShowsView extends MvpContract.MvpView {
     void updateTvShowsList(final RealmResults<TopRatedTvShows> topRatedTvShows);
     void showDetailActivity();
+
+    void refreshList();
 }

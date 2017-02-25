@@ -7,7 +7,6 @@ import com.example.bajob.movieshatch.DependencyInjection.ApplicationComponent;
 import com.example.bajob.movieshatch.DependencyInjection.ApplicationModule;
 import com.example.bajob.movieshatch.DependencyInjection.DaggerApplicationComponent;
 import com.example.bajob.movieshatch.DependencyInjection.NetworkModule;
-import com.example.bajob.movieshatch.DependencyInjection.RealmModule;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 

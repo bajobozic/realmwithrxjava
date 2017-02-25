@@ -34,6 +34,7 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
 
     public void setList(final RealmResults<TopRatedTvShows> element) {
         this.element = element;
+        notifyDataSetChanged();
     }
 
     @Override

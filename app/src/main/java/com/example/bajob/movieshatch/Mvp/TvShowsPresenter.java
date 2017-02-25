@@ -5,5 +5,7 @@ package com.example.bajob.movieshatch.Mvp;
  */
 
 public interface TvShowsPresenter<T extends MvpContract.MvpView> extends MvpContract.MvpPresenter<T> {
-    void loadListData(Integer page);
+    void loadInitalListData();
+    void loadListDataOnScroll(int childCount, int lastVisibleChild);
+    void closeRealm();
 }

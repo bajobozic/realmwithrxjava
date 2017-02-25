@@ -27,8 +27,10 @@ public class ApplicationModule {
         return application;
     }
 
+/*
     @Provides
     public Realm getRealmUi() {
         return Realm.getDefaultInstance();
     }
+*/
 }
