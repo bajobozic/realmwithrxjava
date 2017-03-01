@@ -32,13 +32,6 @@ public class DataSourceManager {
     public DataSourceManager(ApiService apiService) {
         this.apiService = apiService;
         this.subject = BehaviorSubject.create(1);
-        this.realmUi = Realm.getDefaultInstance();
-        this.realmResults = realmUi
-                .where(TopRatedTvShows.class)
-                .findAllAsync()
-                .asObservable()
-                .filter(RealmResults::isValid)
-                .filter(RealmResults::isLoaded);
     }
 
     /**
@@ -56,8 +49,9 @@ public class DataSourceManager {
                     .where(TopRatedTvShows.class)
                     .findAllAsync()
                     .asObservable()
-                    .filter(RealmResults::isValid)
-                    .filter(RealmResults::isLoaded);
+                    .filter(RealmResults::isLoaded)
+                    .filter(RealmResults::isValid);
+
         }
         subscription = subject
                 .distinctUntilChanged()
@@ -69,7 +63,7 @@ public class DataSourceManager {
                         apiService.getImageConfiguration(),
                         this::addPosterPath))
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(this::writeToRealm)
+                .doOnNext(this::writeToRealm)
                 .subscribe(integer -> {
                 }, Throwable::printStackTrace, () -> {
                 });
@@ -106,9 +100,9 @@ public class DataSourceManager {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            return t1.body();
         }
+        return t1.body();
+
     }
 
     private <T> Observable.Transformer<T, T> printThread() {

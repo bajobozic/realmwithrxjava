@@ -1,15 +1,14 @@
 package com.example.bajob.movieshatch;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.bajob.movieshatch.DependencyInjection.ActivityComponent;
 import com.example.bajob.movieshatch.Mvp.TvShowsPresenterImp;
 import com.example.bajob.movieshatch.Mvp.TvShowsView;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
@@ -31,7 +30,6 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     @BindView(R.id.tv_show_progress_bar)
     ProgressBar progressBar;
     private RecyclerView.Adapter adapter;
-    private ActivityComponent activityComponent;
     private TdbMoviesAdapter.TvShowIdDelegate tvShowDelegate = new TdbMoviesAdapter.TvShowIdDelegate() {
         @Override
         public void handleClickPosition(int tvShowId) {
@@ -44,7 +42,6 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        DaggerActivityComponent.builder().applicationComponent(((MoviesHatchApp) getApplication()).getApplicationComponent()).build().inject(MainActivity.this);
         ((MoviesHatchApp) getApplication()).getApplicationComponent().inject(MainActivity.this);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -106,5 +103,15 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     @Override
     public void hideProgress() {
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showError(String message) {
+        showErrorDialog(message, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
     }
 }

@@ -8,19 +8,19 @@ import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
  */
 
 public interface MvpDetailContract {
-    interface MvpDetailView {
+    interface MvpView {
         void showProgress();
 
         void hideProgress();
 
-        void showData(TvShowDetailedInfo tvShowDetailedInfo);
+        void showError(final String message);
 
     }
 
-    interface MvpDetailPresenter<T extends MvpDetailView> {
+    interface MvpDetailPresenter<T extends MvpView> {
         void loadData(final int showId);
 
-        void bindView(final MvpDetailView view);
+        void bindView(final T view);
 
         void unbindView();
 

@@ -26,7 +26,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SplashScreean" />
         </activity>
-        <activity android:name=".DetailActivity">
+        <activity android:name=".DetailActivity"
+            android:theme="@style/AppThemeDetail"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

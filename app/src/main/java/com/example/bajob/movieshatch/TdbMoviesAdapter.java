@@ -55,6 +55,7 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
                     .into(holder.imageView);
             holder.textView.setText(listElement.getOriginalName());
             holder.textView1.setText(listElement.getOverview());
+            holder.itemView.setTag(listElement.getId());
         }
     }
 
@@ -111,7 +112,7 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
         @Override
         public void onClick(View v) {
             int position = getLayoutPosition();
-            adapter.tvShowIdDelegate.handleClickPosition(position);
+            adapter.tvShowIdDelegate.handleClickPosition((Integer) v.getTag());
         }
 
     }

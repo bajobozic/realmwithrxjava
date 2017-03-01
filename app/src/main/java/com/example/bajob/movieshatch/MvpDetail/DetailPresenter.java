@@ -8,8 +8,8 @@ import rx.subscriptions.Subscriptions;
 /**
  * Created by bajob on 2/24/2017.
  */
-public class DetailPresenter implements MvpDetailContract.MvpDetailPresenter<MvpDetailContract.MvpDetailView> {
-    private MvpDetailContract.MvpDetailView mvpDetailView;
+public class DetailPresenter implements MvpDetailContract.MvpDetailPresenter<MvpDetailView> {
+    private MvpDetailView mvpDetailView;
     private DataDetailManager dataDetailManager;
     private Subscription subscription = Subscriptions.empty();
 
@@ -20,19 +20,25 @@ public class DetailPresenter implements MvpDetailContract.MvpDetailPresenter<Mvp
 
     @Override
     public void loadData(final int showId) {
+        mvpDetailView.showProgress();
         subscription = dataDetailManager
                 .loadData(showId)
-                .subscribe(tvShowDetailedInfo -> mvpDetailView.showData(tvShowDetailedInfo)
-                        , Throwable::printStackTrace
+                .subscribe(tvShowDetailedInfo -> {
+                            mvpDetailView.hideProgress();
+                            mvpDetailView.showData(tvShowDetailedInfo);
+                        }
+                        , throwable -> {mvpDetailView.hideProgress();
+                          throwable.printStackTrace();}
                         , () -> {
+                            mvpDetailView.hideProgress();
                         });
-
     }
 
     @Override
-    public void bindView(MvpDetailContract.MvpDetailView view) {
+    public void bindView(MvpDetailView view) {
         this.mvpDetailView = view;
     }
+
 
     @Override
     public void unbindView() {

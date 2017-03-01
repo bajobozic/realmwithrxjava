@@ -7,12 +7,16 @@ package com.example.bajob.movieshatch.Mvp;
 public interface MvpContract {
     interface MvpView {
         void showProgress();
+
         void hideProgress();
+
+        void showError(final String message);
 
     }
 
-     interface MvpPresenter<T extends MvpView> {
+    interface MvpPresenter<T extends MvpView> {
         void bindView(T t);
+
         void unbindView();
     }
 
