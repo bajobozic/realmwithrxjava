@@ -9,6 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.bajob.movieshatch.DependencyInjection.ActivityComponent;
+import com.example.bajob.movieshatch.DependencyInjection.ApplicationComponent;
+import com.example.bajob.movieshatch.DependencyInjection.DaggerActivityComponent;
 import com.example.bajob.movieshatch.Mvp.TvShowsPresenterImp;
 import com.example.bajob.movieshatch.Mvp.TvShowsView;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
@@ -21,6 +24,7 @@ import io.realm.RealmResults;
 
 public class MainActivity extends BaseActivity implements TvShowsView {
     private static final String TAG = "MainActivity";
+    private ActivityComponent activityComponent;
     @Inject
     TvShowsPresenterImp presenterImp;
     @BindView(R.id.toolbar)
@@ -33,7 +37,7 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     private TdbMoviesAdapter.TvShowIdDelegate tvShowDelegate = new TdbMoviesAdapter.TvShowIdDelegate() {
         @Override
         public void handleClickPosition(int tvShowId) {
-            Intent intent = new Intent(MainActivity.this,DetailActivity.class);
+            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
             intent.putExtra("showId", tvShowId);
             startActivity(intent);
         }
@@ -42,7 +46,12 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ((MoviesHatchApp) getApplication()).getApplicationComponent().inject(MainActivity.this);
+        final ApplicationComponent applicationComponent = ((MoviesHatchApp) getApplication()).getApplicationComponent();
+        activityComponent = DaggerActivityComponent.builder()
+                .applicationComponent(applicationComponent)
+//                .activityModule(new ActivityModule())
+                .build();
+        activityComponent.inject(this);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         setUpRecyclerView();
@@ -73,6 +82,7 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     @Override
     protected void onDestroy() {
         presenterImp.unbindView();
+        activityComponent = null;
         super.onDestroy();
     }
 
@@ -88,7 +98,8 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     }
 
     @Override
-    public void showDetailActivity() {}
+    public void showDetailActivity() {
+    }
 
     @Override
     public void refreshList() {

@@ -3,15 +3,16 @@ package com.example.bajob.movieshatch;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.bajob.movieshatch.DependencyInjection.ActivityComponent;
+import com.example.bajob.movieshatch.DependencyInjection.ApplicationComponent;
+import com.example.bajob.movieshatch.DependencyInjection.DaggerActivityComponent;
 import com.example.bajob.movieshatch.MvpDetail.DetailPresenter;
-import com.example.bajob.movieshatch.MvpDetail.MvpDetailContract;
 import com.example.bajob.movieshatch.MvpDetail.MvpDetailView;
 import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
 import com.squareup.picasso.Picasso;
@@ -22,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DetailActivity extends BaseActivity implements MvpDetailView {
+    private ActivityComponent activityComponent;
     private int tvShowId = -1;
     @BindView(R.id.detail_colapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -31,16 +33,21 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
     ImageView imageView;
     @BindView(R.id.name)
     TextView textView;
+
     @BindView(R.id.detail_progress_bar)
     ProgressBar progressBar;
-
     @Inject
     DetailPresenter detailPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((MoviesHatchApp)getApplication()).getApplicationComponent().inject(DetailActivity.this);
+        final ApplicationComponent applicationComponent = ((MoviesHatchApp) getApplication()).getApplicationComponent();
+        activityComponent = DaggerActivityComponent.builder()
+                .applicationComponent(applicationComponent)
+//                .activityModule(new ActivityModule())
+                .build();
+        activityComponent.inject(this);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
         collapsingToolbarLayout.setTitle("");
@@ -62,6 +69,7 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
     @Override
     protected void onDestroy() {
         detailPresenter.unbindView();
+        activityComponent = null;
         super.onDestroy();
     }
 

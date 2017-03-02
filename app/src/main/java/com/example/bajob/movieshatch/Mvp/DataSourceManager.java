@@ -1,36 +1,35 @@
 package com.example.bajob.movieshatch.Mvp;
 
-import android.util.Log;
+import android.support.annotation.NonNull;
 
+import com.example.bajob.movieshatch.ActivityScoped;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 import com.example.bajob.movieshatch.Retrofit.ApiService;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit2.Response;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.BehaviorSubject;
 
 /**
  * Created by bajob on 1/27/2017.
  */
-@Singleton
+@ActivityScoped
 public class DataSourceManager {
     private final ApiService apiService;
     private final BehaviorSubject<Integer> subject;
-    private Realm realmUi;
-    private Observable<RealmResults<TopRatedTvShows>> realmResults;
-    private Subscription subscription;
+    private final Realm realmUi;
+    private Observable<RealmResults<TopRatedTvShows>> realmResults = null;
 
     @Inject
-    public DataSourceManager(ApiService apiService) {
+    public DataSourceManager(ApiService apiService, Realm realmUi) {
         this.apiService = apiService;
+        this.realmUi = realmUi;
         this.subject = BehaviorSubject.create(1);
     }
 
@@ -43,50 +42,47 @@ public class DataSourceManager {
         //on rotation realm is closed so we reinstantiate new realm instance
         //and query realm db,other members are preserved because this is
         //singleton class
-        if (realmUi == null || realmUi.isClosed()) {
-            realmUi = Realm.getDefaultInstance();
+        if (realmResults == null) {
             this.realmResults = realmUi
                     .where(TopRatedTvShows.class)
                     .findAllAsync()
                     .asObservable()
                     .filter(RealmResults::isLoaded)
                     .filter(RealmResults::isValid);
-
         }
-        subscription = subject
+        return subject.asObservable()
                 .distinctUntilChanged()
-                .flatMap(integer -> realmResults
-                        .map(RealmResults::size)
-                        .filter(integer1 -> integer1 < integer).map(integer1 -> integer)
-                        .doOnNext(integer1 -> Log.d("PAGE", " nUMBER: " + integer)))
-                .flatMap(integer -> Observable.zip(apiService.getTopRateedTvShows(null, integer),
-                        apiService.getImageConfiguration(),
-                        this::addPosterPath))
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(this::writeToRealm)
-                .subscribe(integer -> {
-                }, Throwable::printStackTrace, () -> {
-                });
-        return realmResults;
+                .flatMap(this::getRealmResultSize)
+                .flatMap(integer -> (integer != -1) ? getRealmResults(integer) : realmResults);
     }
 
-    void nextPage(int page) {
+    public void nextPage(int page) {
         subject.onNext(page);
     }
 
-    void closeRealm() {
-        if (subscription != null && !subscription.isUnsubscribed()) {
-            subscription.unsubscribe();
-        }
+    public void closeRealm() {
         if (realmUi != null && !realmUi.isClosed()) {
             realmUi.close();
-            realmUi = null;
+//            realmUi = null;
         }
     }
 
-    private Integer writeToRealm(TopRatedTvShows topRatedTvShows) {
+    private Observable<RealmResults<TopRatedTvShows>> getRealmResults(Integer integer) {
+        return Observable.zip(apiService.getTopRateedTvShows(null, integer)
+                , apiService.getImageConfiguration()
+                , this::addPosterPath)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(this::writeToRealm)
+                .flatMap(topRatedTvShows -> realmResults);
+    }
+
+    @NonNull
+    private Observable<Integer> getRealmResultSize(Integer integer) {
+        return realmResults.map(RealmResults::size).map(integer1 -> (integer1 < integer) ? integer : -1);
+    }
+
+    private void writeToRealm(TopRatedTvShows topRatedTvShows) {
         realmUi.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(topRatedTvShows));
-        return topRatedTvShows.getPage();
     }
 
     private TopRatedTvShows addPosterPath(Response<TopRatedTvShows> t1, Response<ImageConfiguration> t2) {
@@ -102,10 +98,5 @@ public class DataSourceManager {
             e.printStackTrace();
         }
         return t1.body();
-
-    }
-
-    private <T> Observable.Transformer<T, T> printThread() {
-        return tObservable -> tObservable.subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread());
     }
 }

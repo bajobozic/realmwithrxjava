@@ -1,37 +1,30 @@
 package com.example.bajob.movieshatch.MvpDetail;
 
+import com.example.bajob.movieshatch.ActivityScoped;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
-import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
 import com.example.bajob.movieshatch.Retrofit.ApiService;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
-import io.realm.RealmResults;
 import retrofit2.Response;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.BehaviorSubject;
-import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Created by bajob on 2/24/2017.
  */
-@Singleton
+@ActivityScoped
 public class DataDetailManager {
     private final ApiService apiService;
-    private Realm realmUi;
-    private Observable<TvShowDetailedInfo> showInfoObservable;
+    private final Realm realmUi;
+    private Observable<TvShowDetailedInfo> showInfoObservable = null;
 
     @Inject
-    public DataDetailManager(ApiService apiService) {
+    public DataDetailManager(ApiService apiService, Realm realmUi) {
         this.apiService = apiService;
+        this.realmUi = realmUi;
     }
 
     public Observable<TvShowDetailedInfo> loadData(int showId) {
@@ -44,8 +37,7 @@ public class DataDetailManager {
     }
 
     private void initRealm(int showId) {
-        if (realmUi == null || realmUi.isClosed()) {
-            realmUi = Realm.getDefaultInstance();
+        if (showInfoObservable == null) {
             showInfoObservable = realmUi
                     .where(TvShowDetailedInfo.class)
                     .equalTo("id", showId)
@@ -59,7 +51,7 @@ public class DataDetailManager {
     public void closeRealm() {
         if (realmUi != null || !realmUi.isClosed()) {
             realmUi.close();
-            realmUi = null;
+//            realmUi = null;
         }
     }
 

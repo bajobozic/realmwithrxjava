@@ -1,13 +1,7 @@
 package com.example.bajob.movieshatch.Mvp;
 
-import android.util.Log;
-
-import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
-
 import javax.inject.Inject;
 
-import io.realm.RealmResults;
-import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -34,7 +28,6 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
                 .doOnNext(topRatedTvShowses -> page = topRatedTvShowses.size())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topRatedTvShowses -> {
-                    Log.i("PRESENTER", "onNext: ");
                     view.updateTvShowsList(topRatedTvShowses);
                     loading = false;
                     //this is called two times on app startup time and that is problem
@@ -44,10 +37,9 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
                     //++page;
                 }, throwable -> {
                     view.hideProgress();
-                    Log.i("PRESENTER", "onCompleted: page++ " + page);
+                    throwable.printStackTrace();
                 }, () -> {
                     view.hideProgress();
-                    Log.i("PRESENTER", "onCompleted: page++ " + page);
                 });
     }
 
@@ -56,7 +48,6 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
         if (!loading && (childCount - lastVisibleChild) <= 5) {
             loading = true;
             view.showProgress();
-            Log.i("PRESENTER", "loadListOnScroll: page++ " + page);
             dataSourceManager.nextPage(++page);
         }
     }
