@@ -89,8 +89,8 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
     }
 
     @Override
-    public void showError(String message) {
-        showErrorDialog(message, new DialogInterface.OnClickListener() {
+    public void showError(final Throwable throwable) {
+        showErrorDialog(throwable, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 

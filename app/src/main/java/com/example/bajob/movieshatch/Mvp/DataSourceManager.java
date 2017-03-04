@@ -51,9 +51,9 @@ public class DataSourceManager {
                     .filter(RealmResults::isValid);
         }
         return subject.asObservable()
-                .distinctUntilChanged()
+//                .distinctUntilChanged()
                 .flatMap(this::getRealmResultSize)
-                .flatMap(integer -> (integer != -1) ? getRealmResults(integer) : realmResults);
+                .flatMap(integer -> (integer != -1) ? getRealmResults(integer).onErrorResumeNext(throwable -> realmResults) : realmResults);
     }
 
     public void nextPage(int page) {
@@ -82,7 +82,9 @@ public class DataSourceManager {
     }
 
     private void writeToRealm(TopRatedTvShows topRatedTvShows) {
-        realmUi.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(topRatedTvShows));
+        if (topRatedTvShows != null) {
+            realmUi.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(topRatedTvShows));
+        }
     }
 
     private TopRatedTvShows addPosterPath(Response<TopRatedTvShows> t1, Response<ImageConfiguration> t2) {

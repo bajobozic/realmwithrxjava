@@ -10,7 +10,7 @@ public interface MvpContract {
 
         void hideProgress();
 
-        void showError(final String message);
+        void showError(final Throwable throwable);
 
     }
 

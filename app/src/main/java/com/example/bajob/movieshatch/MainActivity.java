@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements TvShowsView {
 
     @Override
     public void updateTvShowsList(RealmResults<TopRatedTvShows> topRatedTvShows) {
-        hideProgress();
+//        hideProgress();
         ((TdbMoviesAdapter) adapter).setList(topRatedTvShows);
     }
 
@@ -117,8 +117,8 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     }
 
     @Override
-    public void showError(String message) {
-        showErrorDialog(message, new DialogInterface.OnClickListener() {
+    public void showError(final Throwable throwable) {
+        showErrorDialog(throwable, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 

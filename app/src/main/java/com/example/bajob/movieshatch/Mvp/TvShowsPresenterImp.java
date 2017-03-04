@@ -28,6 +28,7 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
                 .doOnNext(topRatedTvShowses -> page = topRatedTvShowses.size())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topRatedTvShowses -> {
+                    view.hideProgress();
                     view.updateTvShowsList(topRatedTvShowses);
                     loading = false;
                     //this is called two times on app startup time and that is problem
@@ -36,6 +37,10 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
                     //not from loadListDataOnScroll,but???
                     //++page;
                 }, throwable -> {
+                    if (page > 1) {
+                        loading = false;
+                        --page;
+                    }
                     view.hideProgress();
                     throwable.printStackTrace();
                 }, () -> {

@@ -1,5 +1,7 @@
 package com.example.bajob.movieshatch.MvpDetail;
 
+import android.util.Log;
+
 import com.example.bajob.movieshatch.ActivityScoped;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
@@ -19,7 +21,7 @@ import rx.android.schedulers.AndroidSchedulers;
 public class DataDetailManager {
     private final ApiService apiService;
     private final Realm realmUi;
-    private Observable<TvShowDetailedInfo> showInfoObservable = null;
+    private TvShowDetailedInfo showInfoObservable = null;
 
     @Inject
     public DataDetailManager(ApiService apiService, Realm realmUi) {
@@ -29,11 +31,11 @@ public class DataDetailManager {
 
     public Observable<TvShowDetailedInfo> loadData(int showId) {
         initRealm(showId);
-        return Observable.mergeDelayError(Observable.zip(apiService.getTvShowDetailedInfo(showId, null, null), apiService.getImageConfiguration(), this::addPosterPath)
+        return Observable.concat((showInfoObservable == null) ? Observable.empty() : Observable.just(showInfoObservable)
+                , Observable.zip(apiService.getTvShowDetailedInfo(showId, null, null), apiService.getImageConfiguration(), this::addPosterPath)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .doOnNext(this::writeToRealm)
-                , showInfoObservable)
-                .takeFirst(tvShowDetailedInfo -> tvShowDetailedInfo != null);
+                        .doOnNext(this::writeToRealm))
+                .first();
     }
 
     private void initRealm(int showId) {
@@ -41,10 +43,7 @@ public class DataDetailManager {
             showInfoObservable = realmUi
                     .where(TvShowDetailedInfo.class)
                     .equalTo("id", showId)
-                    .findFirstAsync()
-                    .<TvShowDetailedInfo>asObservable()
-                    .filter(tvShowDetailedInfo -> tvShowDetailedInfo.isLoaded())
-                    .filter(tvShowDetailedInfo -> tvShowDetailedInfo.isValid());
+                    .findFirst();//unfortunately this must be called on main thread,async call with isLoaded() && !isValid() just don't work as expected
         }
     }
 
@@ -55,9 +54,10 @@ public class DataDetailManager {
         }
     }
 
-    private TvShowDetailedInfo writeToRealm(TvShowDetailedInfo tvShowDetailedInfo) {
-        realmUi.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(tvShowDetailedInfo));
-        return tvShowDetailedInfo;
+    private void writeToRealm(TvShowDetailedInfo tvShowDetailedInfo) {
+        if (tvShowDetailedInfo != null) {
+            realmUi.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(tvShowDetailedInfo));
+        }
     }
 
     private TvShowDetailedInfo addPosterPath(Response<TvShowDetailedInfo> t1, Response<ImageConfiguration> t2) {

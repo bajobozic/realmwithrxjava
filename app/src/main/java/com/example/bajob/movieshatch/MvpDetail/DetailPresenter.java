@@ -1,8 +1,13 @@
 package com.example.bajob.movieshatch.MvpDetail;
 
+import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import javax.inject.Inject;
 
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -23,12 +28,17 @@ public class DetailPresenter implements MvpDetailContract.MvpDetailPresenter<Mvp
         mvpDetailView.showProgress();
         subscription = dataDetailManager
                 .loadData(showId)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tvShowDetailedInfo -> {
                             mvpDetailView.hideProgress();
+
                             mvpDetailView.showData(tvShowDetailedInfo);
                         }
-                        , throwable -> {mvpDetailView.hideProgress();
-                          throwable.printStackTrace();}
+                        , throwable -> {
+                            mvpDetailView.hideProgress();
+                            mvpDetailView.showError(throwable);
+                            throwable.printStackTrace();
+                        }
                         , () -> {
                             mvpDetailView.hideProgress();
                         });
