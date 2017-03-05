@@ -1,5 +1,6 @@
 package com.example.bajob.movieshatch.MvpDetail;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.bajob.movieshatch.ActivityScoped;
@@ -7,12 +8,16 @@ import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
 import com.example.bajob.movieshatch.Retrofit.ApiService;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import io.realm.Realm;
 import retrofit2.Response;
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 
 /**
  * Created by bajob on 2/24/2017.
@@ -21,7 +26,8 @@ import rx.android.schedulers.AndroidSchedulers;
 public class DataDetailManager {
     private final ApiService apiService;
     private final Realm realmUi;
-    private TvShowDetailedInfo showInfoObservable = null;
+    private final int timeoutTreshold = 200;//in this time range we should load data from realm else just pull from network
+    private Observable<TvShowDetailedInfo> showInfoObservable = null;
 
     @Inject
     public DataDetailManager(ApiService apiService, Realm realmUi) {
@@ -31,11 +37,20 @@ public class DataDetailManager {
 
     public Observable<TvShowDetailedInfo> loadData(int showId) {
         initRealm(showId);
-        return Observable.concat((showInfoObservable == null) ? Observable.empty() : Observable.just(showInfoObservable)
-                , Observable.zip(apiService.getTvShowDetailedInfo(showId, null, null), apiService.getImageConfiguration(), this::addPosterPath)
-                        .observeOn(AndroidSchedulers.mainThread())
+        return Observable.concat(showInfoObservable.timeout(timeoutTreshold, TimeUnit.MILLISECONDS, Observable.empty()).observeOn(AndroidSchedulers.mainThread())
+                , Observable.zip(apiService.getTvShowDetailedInfo(showId, null, null).flatMap(handleShowErrorResponse()), apiService.getImageConfiguration().flatMap(handleImageErrorResponse()), this::addPosterPath).observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(this::writeToRealm))
                 .first();
+    }
+
+    @NonNull
+    private Func1<Response<TvShowDetailedInfo>, Observable<? extends Response<TvShowDetailedInfo>>> handleShowErrorResponse() {
+        return response -> (response.isSuccessful() && response.code() < 300) ? Observable.just(response) : Observable.error(new HttpException(response));
+    }
+
+    @NonNull
+    private Func1<Response<ImageConfiguration>, Observable<? extends Response<ImageConfiguration>>> handleImageErrorResponse() {
+        return response -> (response.isSuccessful() && response.code() < 300) ? Observable.just(response) : Observable.error(new HttpException(response));
     }
 
     private void initRealm(int showId) {
@@ -43,14 +58,15 @@ public class DataDetailManager {
             showInfoObservable = realmUi
                     .where(TvShowDetailedInfo.class)
                     .equalTo("id", showId)
-                    .findFirst();//unfortunately this must be called on main thread,async call with isLoaded() && !isValid() just don't work as expected
+                    .findFirstAsync().<TvShowDetailedInfo>asObservable()//never fires onError or onCompleted notification,basically this is infinite observable
+                    .filter(tvShowDetailedInfo -> tvShowDetailedInfo.isLoaded())//so in case there is no data for given id in realm database we must use timeout operator to send onCompleted event
+                    .filter(tvShowDetailedInfo -> tvShowDetailedInfo.isValid());//and switch to network source of data
         }
     }
 
     public void closeRealm() {
         if (realmUi != null || !realmUi.isClosed()) {
             realmUi.close();
-//            realmUi = null;
         }
     }
 
@@ -73,4 +89,5 @@ public class DataDetailManager {
         }
         return t1.body();
     }
+
 }

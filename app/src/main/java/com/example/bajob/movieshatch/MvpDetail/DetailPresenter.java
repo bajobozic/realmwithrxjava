@@ -31,7 +31,6 @@ public class DetailPresenter implements MvpDetailContract.MvpDetailPresenter<Mvp
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tvShowDetailedInfo -> {
                             mvpDetailView.hideProgress();
-
                             mvpDetailView.showData(tvShowDetailedInfo);
                         }
                         , throwable -> {
