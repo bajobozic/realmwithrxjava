@@ -7,6 +7,7 @@ import com.example.bajob.movieshatch.ActivityScoped;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
 import com.example.bajob.movieshatch.Retrofit.ApiService;
+import com.squareup.haha.trove.THash;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +27,7 @@ import rx.functions.Func1;
 public class DataDetailManager {
     private final ApiService apiService;
     private final Realm realmUi;
-    private final int timeoutTreshold = 200;//in this time range we should load data from realm else just pull from network
+    private final int timeoutTreshold = 200;//in this time range we should hopefully load data from realm else just pull from network
     private Observable<TvShowDetailedInfo> showInfoObservable = null;
 
     @Inject
@@ -37,8 +38,10 @@ public class DataDetailManager {
 
     public Observable<TvShowDetailedInfo> loadData(int showId) {
         initRealm(showId);
-        return Observable.concat(showInfoObservable.timeout(timeoutTreshold, TimeUnit.MILLISECONDS, Observable.empty()).observeOn(AndroidSchedulers.mainThread())
-                , Observable.zip(apiService.getTvShowDetailedInfo(showId, null, null).flatMap(handleShowErrorResponse()), apiService.getImageConfiguration().flatMap(handleImageErrorResponse()), this::addPosterPath).observeOn(AndroidSchedulers.mainThread())
+        return showInfoObservable.timeout(timeoutTreshold, TimeUnit.MILLISECONDS, Observable.empty())
+                .observeOn(AndroidSchedulers.mainThread())
+                .concatWith(Observable.zip(apiService.getTvShowDetailedInfo(showId, null, null).flatMap(handleShowErrorResponse()), apiService.getImageConfiguration().flatMap(handleImageErrorResponse()), this::addPosterPath)
+                        .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(this::writeToRealm))
                 .first();
     }
@@ -60,7 +63,7 @@ public class DataDetailManager {
                     .equalTo("id", showId)
                     .findFirstAsync().<TvShowDetailedInfo>asObservable()//never fires onError or onCompleted notification,basically this is infinite observable
                     .filter(tvShowDetailedInfo -> tvShowDetailedInfo.isLoaded())//so in case there is no data for given id in realm database we must use timeout operator to send onCompleted event
-                    .filter(tvShowDetailedInfo -> tvShowDetailedInfo.isValid());//and switch to network source of data
+                    .filter(tvShowDetailedInfo -> tvShowDetailedInfo.isValid());//and switch to network source for data
         }
     }
 
