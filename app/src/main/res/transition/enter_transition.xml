@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet android:transitionOrdering="sequential" android:duration="500" xmlns:android="http://schemas.android.com/apk/res/android">
+    <slide android:slideEdge="right">
+        <targets>
+            <target android:targetId="@id/detail_appbar"/>
+            <target android:targetId="@id/detail_colapsing_toolbar"/>
+            <target android:targetId="@id/detail_app_bar_image"/>
+            <target android:targetId="@id/detail_toolbar"/>
+        </targets>
+    </slide>
+    <slide android:slideEdge="bottom">
+        <targets android:targetId="@id/name"/>
+    </slide>
+</transitionSet>

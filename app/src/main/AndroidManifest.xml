@@ -10,7 +10,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.Base">
         <activity
             android:name=".SplashScreean"
             android:theme="@style/SplashTheme">
@@ -21,13 +21,14 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:parentActivityName=".SplashScreean">
+            android:parentActivityName=".SplashScreean"
+            android:theme="@style/AppTheme.Main">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SplashScreean" />
         </activity>
         <activity android:name=".DetailActivity"
-            android:theme="@style/AppThemeDetail"
+            android:theme="@style/AppTheme.Detail"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
