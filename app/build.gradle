@@ -6,7 +6,7 @@ android {
         mavenCentral()
     }
     compileSdkVersion 25
-    buildToolsVersion "24.0.0"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.example.bajob.movieshatch"
         minSdkVersion 16

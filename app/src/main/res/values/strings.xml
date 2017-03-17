@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MoviesHatch</string>
+    <string name="position_tag">POSITION_TAG</string>
+    <string name="image_tag">IMAGE_TAG</string>
 </resources>

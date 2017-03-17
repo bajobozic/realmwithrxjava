@@ -1,14 +1,14 @@
 package com.example.bajob.movieshatch;
 
-import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.bajob.movieshatch.Pojo.TopRatedInteface;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 import com.example.bajob.movieshatch.Pojo.TvShowInfo;
 import com.squareup.picasso.Picasso;
@@ -21,25 +21,26 @@ import io.realm.RealmResults;
  * Created by bajob on 1/19/2017.
  */
 public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Adapter<TdbMoviesAdapter.MoviesHolder> {
-    private RealmResults<TopRatedTvShows> element;
+    private RealmResults<? extends TopRatedInteface> element;
     private int maxPageResultNum;
     private int cachedListSize;
     private TvShowIdDelegate tvShowIdDelegate;
-    public TdbMoviesAdapter(RealmResults<TopRatedTvShows> element,TvShowIdDelegate tvShowIdDelegate) {
+
+    public TdbMoviesAdapter(RealmResults<? extends TopRatedInteface> element, TvShowIdDelegate tvShowIdDelegate) {
         this.element = element;
         this.cachedListSize = 0;
         this.maxPageResultNum = 0;
         this.tvShowIdDelegate = tvShowIdDelegate;
     }
 
-    public void setList(final RealmResults<TopRatedTvShows> element) {
+    public void setList(final RealmResults<? extends TopRatedInteface> element) {
         this.element = element;
         notifyDataSetChanged();
     }
 
     @Override
     public MoviesHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MoviesHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.movies_item, parent, false),this);
+        return new MoviesHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.movies_item, parent, false), this);
     }
 
     @Override
@@ -55,7 +56,14 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
                     .into(holder.imageView);
             holder.textView.setText(listElement.getOriginalName());
             holder.textView1.setText(listElement.getOverview());
-            holder.itemView.setTag(listElement.getId());
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.imageView.setTransitionName("source " + position);
+                holder.itemView.setTag(R.string.position_tag, listElement.getId());
+                holder.itemView.setTag(R.string.image_tag, posterPath);
+            } else {
+                holder.itemView.setTag(R.string.position_tag, listElement.getId());
+            }
         }
     }
 
@@ -102,7 +110,7 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
         @BindView(R.id.textView8)
         TextView textView1;
 
-        public MoviesHolder(View itemView,TdbMoviesAdapter adapter) {
+        public MoviesHolder(View itemView, TdbMoviesAdapter adapter) {
             super(itemView);
             this.adapter = adapter;
             ButterKnife.bind(this, itemView);
@@ -111,14 +119,20 @@ public class TdbMoviesAdapter extends android.support.v7.widget.RecyclerView.Ada
 
         @Override
         public void onClick(View v) {
-            int position = getLayoutPosition();
-            adapter.tvShowIdDelegate.handleClickPosition((Integer) v.getTag());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                final View sharedView = this.imageView;
+                adapter.tvShowIdDelegate.handleClickPosition((Integer) v.getTag(R.string.position_tag), (String) v.getTag(R.string.image_tag), sharedView);
+            } else {
+                adapter.tvShowIdDelegate.handleClickPosition((Integer) v.getTag(R.string.position_tag));
+            }
         }
 
     }
 
     interface TvShowIdDelegate {
         void handleClickPosition(final int tvShowId);
+
+        void handleClickPosition(final int tvShowId, final String imagePath, final View view);
     }
 }
 

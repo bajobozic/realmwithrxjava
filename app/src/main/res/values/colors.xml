@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#ef5350</color>
+    <color name="colorPrimaryDark">#9f3034</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorDVGreen">#01d277</color>
+    <color name="colorDVGreen">#d50000</color>
     <color name="colorDVBlack">#081c24</color>
+    <color name="statusBarScrimTransparent">#00000000</color>
 </resources>

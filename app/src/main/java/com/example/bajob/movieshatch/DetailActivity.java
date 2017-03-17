@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
 public class DetailActivity extends BaseActivity implements MvpDetailView {
     private ActivityComponent activityComponent;
     private int tvShowId = -1;
+    private String sharedImagePath;
     @BindView(R.id.detail_colapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
     @BindView(R.id.detail_toolbar)
@@ -61,7 +62,19 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
         if (getIntent() != null) {
             if (getIntent().hasExtra("showId")) {
                 tvShowId = getIntent().getIntExtra("showId", -1);
+                if (getIntent().hasExtra("imagePath")) {
+                    sharedImagePath = getIntent().getStringExtra("imagePath");
+                }
                 detailPresenter.loadData(tvShowId);
+            }
+            if (sharedImagePath != null) {
+                Picasso.with(this)
+                        .load(sharedImagePath)
+                        .fit()
+                        .centerInside()
+                        .error(R.mipmap.ic_launcher)
+                        .placeholder(R.mipmap.ic_launcher)
+                        .into(imageView);
             }
         }
     }
@@ -93,7 +106,7 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
         showErrorDialog(throwable, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                hideProgress();
             }
         });
     }
@@ -101,7 +114,13 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
     @Override
     public void showData(TvShowDetailedInfo tvShowDetailedInfo) {
         collapsingToolbarLayout.setTitle(tvShowDetailedInfo.getOriginalName());
-        Picasso.with(this).load(tvShowDetailedInfo.getPosterPath()).fit().centerInside().placeholder(R.mipmap.ic_launcher).into(imageView);
+        Picasso.with(this)
+                .load(tvShowDetailedInfo.getPosterPath())
+                .fit()
+                .centerInside()
+                .error(R.mipmap.ic_launcher)
+                .placeholder(R.mipmap.ic_launcher)
+                .into(imageView);
         textView.setText(tvShowDetailedInfo.getOverview());
     }
 

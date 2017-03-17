@@ -3,6 +3,7 @@ package com.example.bajob.movieshatch.Retrofit;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.MovieDetailedInfo;
 import com.example.bajob.movieshatch.Pojo.TopRatedMovies;
+import com.example.bajob.movieshatch.Pojo.TopRatedSearchTvShows;
 import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
 import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
 import com.example.bajob.movieshatch.Pojo.TvShowInfo;
@@ -26,7 +27,7 @@ public interface ApiService {
     Observable<Response<TvShowDetailedInfo>> getTvShowDetailedInfo(@Path("tv_id") Integer tvId, @Query("language") String language, @Query("append_to_response") String appendToRersponse);
 
     @GET("search/tv")
-    Observable<Response<TopRatedTvShows>> searchTvShows(@Query("query")String query);
+    Observable<Response<TopRatedSearchTvShows>> searchTvShows(@Query("query")String query);
 
     @GET("movie/top_rated")
     Observable<Response<TopRatedMovies>> getTopRateedMovies(@Query("language") String language, @Query("page") String page, @Query("regjion") String region);

@@ -27,7 +27,7 @@ import rx.functions.Func1;
 public class DataDetailManager {
     private final ApiService apiService;
     private final Realm realmUi;
-    private final int timeoutTreshold = 200;//in this time range we should hopefully load data from realm else just pull from network
+    private final int timeoutTreshold = 500;//in this time range we should hopefully load data from realm else just pull from network
     private Observable<TvShowDetailedInfo> showInfoObservable = null;
 
     @Inject
@@ -75,7 +75,7 @@ public class DataDetailManager {
 
     private void writeToRealm(TvShowDetailedInfo tvShowDetailedInfo) {
         if (tvShowDetailedInfo != null) {
-            realmUi.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(tvShowDetailedInfo));
+            realmUi.executeTransactionAsync(realm -> realm.insertOrUpdate(tvShowDetailedInfo));
         }
     }
 

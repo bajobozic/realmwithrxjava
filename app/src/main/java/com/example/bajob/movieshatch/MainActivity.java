@@ -8,24 +8,23 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.bajob.movieshatch.DependencyInjection.ActivityComponent;
 import com.example.bajob.movieshatch.DependencyInjection.ApplicationComponent;
 import com.example.bajob.movieshatch.DependencyInjection.DaggerActivityComponent;
 import com.example.bajob.movieshatch.Mvp.TvShowsPresenterImp;
 import com.example.bajob.movieshatch.Mvp.TvShowsView;
-import com.example.bajob.movieshatch.Pojo.TopRatedTvShows;
+import com.example.bajob.movieshatch.Pojo.TopRatedInteface;
 
 import javax.inject.Inject;
 
@@ -54,13 +53,17 @@ public class MainActivity extends BaseActivity implements TvShowsView {
         public void handleClickPosition(int tvShowId) {
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
             intent.putExtra("showId", tvShowId);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ActivityCompat.startActivity(MainActivity.this,intent,ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
-               // startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
-            } else {
-                startActivity(intent);
-            }
+            startActivity(intent);
+        }
 
+        @Override
+        public void handleClickPosition(int tvShowId, String imagePath, View view) {
+            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+            intent.putExtra("showId", tvShowId);
+            intent.putExtra("imagePath", imagePath);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ActivityCompat.startActivity(MainActivity.this, intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "target").toBundle());
+            }
         }
     };
 
@@ -74,11 +77,14 @@ public class MainActivity extends BaseActivity implements TvShowsView {
                 .build();
         activityComponent.inject(this);
         ButterKnife.bind(this);
+        toolbar.setContentInsetsAbsolute(0, 0);
         setSupportActionBar(toolbar);
         setUpRecyclerView();
         setUpSearchToolbar();
         presenterImp.bindView(this);
         presenterImp.loadInitalListData();
+        presenterImp.loadInitialSearchData("");
+        handleSearchQuery();
     }
 
     private void setUpSearchToolbar() {
@@ -100,21 +106,14 @@ public class MainActivity extends BaseActivity implements TvShowsView {
                         }
 
                         @Override
-                        public void onAnimationCancel(Animator animator) {}
+                        public void onAnimationCancel(Animator animator) {
+                        }
 
                         @Override
-                        public void onAnimationRepeat(Animator animator) {}
+                        public void onAnimationRepeat(Animator animator) {
+                        }
                     });
-                    searchText.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-                        @Override
-                        public void afterTextChanged(Editable editable) {}
-                    });
+                    handleSearchQuery();
                 } else {
                     searchImage.animate().translationX(0.0f).setDuration(250).setListener(new Animator.AnimatorListener() {
                         @Override
@@ -128,13 +127,39 @@ public class MainActivity extends BaseActivity implements TvShowsView {
                         }
 
                         @Override
-                        public void onAnimationCancel(Animator animator) {}
+                        public void onAnimationCancel(Animator animator) {
+                        }
 
                         @Override
-                        public void onAnimationRepeat(Animator animator) {}
+                        public void onAnimationRepeat(Animator animator) {
+                        }
                     });
                     searchText.setVisibility(View.GONE);
                 }
+            }
+        });
+    }
+
+    private void handleSearchQuery() {
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() <= 2) {
+                  /*  presenterImp.resetDefaults();
+                    presenterImp.loadInitalListData();*/
+                } else {
+                    presenterImp.loadNextSearchQuery(charSequence.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
     }
@@ -172,12 +197,6 @@ public class MainActivity extends BaseActivity implements TvShowsView {
     }
 
     @Override
-    public void updateTvShowsList(RealmResults<TopRatedTvShows> topRatedTvShows) {
-//        hideProgress();
-        ((TdbMoviesAdapter) adapter).setList(topRatedTvShows);
-    }
-
-    @Override
     public void showDetailActivity() {
     }
 
@@ -201,8 +220,13 @@ public class MainActivity extends BaseActivity implements TvShowsView {
         showErrorDialog(throwable, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                hideProgress();
             }
         });
+    }
+
+    @Override
+    public void updateTvShowsList(RealmResults<? extends TopRatedInteface> topRatedTvShows) {
+        ((TdbMoviesAdapter) adapter).setList(topRatedTvShows);
     }
 }

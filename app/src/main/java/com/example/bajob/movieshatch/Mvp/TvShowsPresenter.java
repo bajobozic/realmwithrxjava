@@ -8,4 +8,9 @@ public interface TvShowsPresenter<T extends MvpContract.MvpView> extends MvpCont
     void loadInitalListData();
     void loadListDataOnScroll(int childCount, int lastVisibleChild);
     void closeRealm();
+
+    void loadInitialSearchData(String charSequence);
+    void loadNextSearchQuery(String charSequence);
+
+    void resetDefaults();
 }

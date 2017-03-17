@@ -3,8 +3,6 @@ package com.example.bajob.movieshatch.Pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -13,11 +11,12 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by bajob on 1/18/2017.
  */
-public class TopRatedTvShows extends RealmObject implements TopRatedInteface {
+public class TopRatedSearchTvShows extends RealmObject implements TopRatedInteface{
     @SerializedName("page")
     @Expose
     @PrimaryKey
     private Integer page;
+
     @SerializedName("results")
     @Expose
     private RealmList<TvShowInfo> results = null;
@@ -59,5 +58,4 @@ public class TopRatedTvShows extends RealmObject implements TopRatedInteface {
     public void setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
     }
-
 }
