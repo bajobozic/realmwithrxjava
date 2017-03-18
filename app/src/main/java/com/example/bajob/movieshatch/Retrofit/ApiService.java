@@ -27,7 +27,7 @@ public interface ApiService {
     Observable<Response<TvShowDetailedInfo>> getTvShowDetailedInfo(@Path("tv_id") Integer tvId, @Query("language") String language, @Query("append_to_response") String appendToRersponse);
 
     @GET("search/tv")
-    Observable<Response<TopRatedSearchTvShows>> searchTvShows(@Query("query")String query);
+    Observable<Response<TopRatedSearchTvShows>> searchTvShows(@Query("query")String query,@Query("page")Integer page);
 
     @GET("movie/top_rated")
     Observable<Response<TopRatedMovies>> getTopRateedMovies(@Query("language") String language, @Query("page") String page, @Query("regjion") String region);

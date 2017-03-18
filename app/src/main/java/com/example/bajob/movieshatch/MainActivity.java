@@ -103,6 +103,7 @@ public class MainActivity extends BaseActivity implements TvShowsView {
                         public void onAnimationEnd(Animator animator) {
                             searchText.setVisibility(View.VISIBLE);
                             searchImage.setBackgroundColor(Color.WHITE);
+                            presenterImp.setInSearchMode(true);
                         }
 
                         @Override
@@ -124,6 +125,7 @@ public class MainActivity extends BaseActivity implements TvShowsView {
                         @Override
                         public void onAnimationEnd(Animator animator) {
                             searchText.setVisibility(View.GONE);
+                            presenterImp.setInSearchMode(false);
                         }
 
                         @Override
@@ -144,15 +146,23 @@ public class MainActivity extends BaseActivity implements TvShowsView {
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                /*Log.d(TAG, "beforeTextChanged: start "+i);
+                Log.d(TAG, "beforeTextChanged: count "+i1);
+                Log.d(TAG, "beforeTextChanged: after "+i2);*/
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() <= 2) {
-                  /*  presenterImp.resetDefaults();
-                    presenterImp.loadInitalListData();*/
+              /*  Log.d(TAG, "onTextChanged: start "+i);
+                Log.d(TAG, "onTextChanged: before "+i1);
+                Log.d(TAG, "onTextChanged: count "+i2);
+                Log.d(TAG, "onTextChanged: lenght "+charSequence.length());*/
+                if (charSequence.length() <= 2 && i <= charSequence.length()) {
+                    presenterImp.resetDefaults();
+                    presenterImp.setInSearchMode(false);
+                    presenterImp.loadInitalListData();
                 } else {
+                    presenterImp.setInSearchMode(true);
                     presenterImp.loadNextSearchQuery(charSequence.toString());
                 }
             }

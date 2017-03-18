@@ -1,6 +1,7 @@
 package com.example.bajob.movieshatch.Mvp;
 
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 
 import com.example.bajob.movieshatch.ActivityScoped;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
@@ -29,7 +30,7 @@ import rx.subjects.PublishSubject;
 public class DataSourceManager {
     private final ApiService apiService;
     private final BehaviorSubject<Integer> subject;
-    private final BehaviorSubject<String> searchSubject;
+    private final BehaviorSubject<Pair<String,Integer>> searchSubject;
     private final Realm realmUi;
     private Observable<RealmResults<TopRatedTvShows>> realmResults = null;
     private Observable<RealmResults<TopRatedSearchTvShows>> searchResults = null;
@@ -105,7 +106,7 @@ public class DataSourceManager {
     }
     private void writeToRealmSearch(TopRatedSearchTvShows topRatedTvShows) {
         if (topRatedTvShows != null) {
-            realmUi.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(topRatedTvShows));
+            realmUi.executeTransactionAsync(realm -> realm.insertOrUpdate(topRatedTvShows));
         }
     }
 
@@ -138,7 +139,7 @@ public class DataSourceManager {
         return t1.body();
     }
 
-    public Observable<RealmResults<TopRatedSearchTvShows>> loadSearchData(String charSequence) {
+    public Observable<RealmResults<TopRatedSearchTvShows>> loadSearchData(String charSequence,Integer page) {
         if (searchResults == null) {
             searchResults = realmUi
                     .where(TopRatedSearchTvShows.class)
@@ -148,16 +149,17 @@ public class DataSourceManager {
                     .filter(RealmResults::isValid);
         }
         return searchSubject
-                .filter(s -> s.length() > 2)
+                .filter(stringIntegerPair -> stringIntegerPair.first.length()>2)
+//                .filter(s -> s.length() > 2)
                 .distinctUntilChanged()
                 .debounce(350,TimeUnit.MILLISECONDS)
-                .switchMap(s -> Observable.zip(apiService.searchTvShows(s), apiService.getImageConfiguration(), this::addPosterPathSearch).observeOn(AndroidSchedulers.mainThread()))
+                .switchMap(s -> Observable.zip(apiService.searchTvShows(s.first,s.second), apiService.getImageConfiguration(), this::addPosterPathSearch).observeOn(AndroidSchedulers.mainThread()))
                 .doOnNext(this::writeToRealmSearch)
                 .flatMap(topRatedSearchTvShows -> searchResults);
 
     }
 
-    public void loadNextSearchQuery(String charSequence) {
-        searchSubject.onNext(charSequence);
+    public void loadNextSearchQuery(String charSequence,Integer page) {
+        searchSubject.onNext(new Pair<>(charSequence,page));
     }
 }

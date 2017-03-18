@@ -20,7 +20,9 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
     private TvShowsView view;
     private final DataSourceManager dataSourceManager;
     private int page = 1;
+    private String searchQuery = "";
     private boolean loading = false;
+    private boolean inSearchMode;
 
     @Inject
     public TvShowsPresenterImp(DataSourceManager dataSourceManager) {
@@ -31,8 +33,11 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
     public void loadInitalListData() {
         view.showProgress();
         subscription = dataSourceManager.loadData()
-                .doOnNext(topRatedTvShowses -> {page = topRatedTvShowses.size();
-                    Log.d("PAGE NUM IN LOAD DATA", ""+page);})
+                .filter(topRatedTvShowses -> !inSearchMode)
+                .doOnNext(topRatedTvShowses -> {
+                    page = topRatedTvShowses.size();
+                    Log.d("PAGE NUM IN LOAD DATA", "" + page);
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topRatedTvShowses -> {
                     view.hideProgress();
@@ -61,16 +66,24 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
         if (!loading && (childCount - lastVisibleChild) <= 5) {
             loading = true;
             view.showProgress();
-            dataSourceManager.nextPage(++page);
+            if (!inSearchMode) {
+                dataSourceManager.nextPage(++page);
+            } else {
+                dataSourceManager.loadNextSearchQuery(searchQuery,page);
+            }
         }
     }
 
     @Override
     public void loadInitialSearchData(String charSequence) {
         view.showProgress();
-        searchSubscription=dataSourceManager.loadSearchData(charSequence)
-                .doOnNext(topRatedTvShowses -> {page = topRatedTvShowses.size();
-                    Log.d("PAGE NUM IN SEARCH DATA", ""+page);})
+        searchQuery = charSequence;
+        searchSubscription = dataSourceManager.loadSearchData(charSequence,page)
+                .filter(topRatedSearchTvShowses -> inSearchMode)
+                .doOnNext(topRatedTvShowses -> {
+                    page = topRatedTvShowses.size();
+                    Log.d("PAGE NUM IN SEARCH DATA", "" + page);
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topRatedTvShowses -> {
                     view.hideProgress();
@@ -91,7 +104,9 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
 
     @Override
     public void loadNextSearchQuery(String charSequence) {
-        dataSourceManager.loadNextSearchQuery(charSequence);
+        view.showProgress();
+        searchQuery = charSequence;
+        dataSourceManager.loadNextSearchQuery(searchQuery,page);
     }
 
     @Override
@@ -101,7 +116,7 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
 
     @Override
     public void resetDefaults() {
-        page =1;
+        page = 1;
     }
 
     @Override
@@ -118,5 +133,9 @@ public class TvShowsPresenterImp implements TvShowsPresenter<TvShowsView> {
             searchSubscription.unsubscribe();
         }
         this.view = null;
+    }
+
+    public void setInSearchMode(boolean inSearchMode) {
+        this.inSearchMode = inSearchMode;
     }
 }
