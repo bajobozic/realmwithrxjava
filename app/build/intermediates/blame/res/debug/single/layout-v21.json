@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\notification_template_custom_big.xml",
+        "source": "C:\\Users\\bajob\\.android\\build-cache\\b3d3ec2b9a55217d3c68e1ad863379b94c7ba53a\\output\\res\\layout-v21\\notification_template_custom_big.xml"
+    },
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\notification_template_icon_group.xml",
+        "source": "C:\\Users\\bajob\\.android\\build-cache\\b3d3ec2b9a55217d3c68e1ad863379b94c7ba53a\\output\\res\\layout-v21\\notification_template_icon_group.xml"
+    },
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\notification_action.xml",
+        "source": "C:\\Users\\bajob\\.android\\build-cache\\b3d3ec2b9a55217d3c68e1ad863379b94c7ba53a\\output\\res\\layout-v21\\notification_action.xml"
+    },
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\activity_detail.xml",
+        "source": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\src\\main\\res\\layout-v21\\activity_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\notification_action_tombstone.xml",
+        "source": "C:\\Users\\bajob\\.android\\build-cache\\b3d3ec2b9a55217d3c68e1ad863379b94c7ba53a\\output\\res\\layout-v21\\notification_action_tombstone.xml"
+    }
+]

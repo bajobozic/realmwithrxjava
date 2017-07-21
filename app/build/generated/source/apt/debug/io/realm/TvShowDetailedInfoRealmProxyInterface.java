@@ -1,0 +1,57 @@
+package io.realm;
+
+
+public interface TvShowDetailedInfoRealmProxyInterface {
+    public String realmGet$backdropPath();
+    public void realmSet$backdropPath(String value);
+    public RealmList<com.example.bajob.movieshatch.Pojo.CreatedBy> realmGet$createdBy();
+    public void realmSet$createdBy(RealmList<com.example.bajob.movieshatch.Pojo.CreatedBy> value);
+    public String realmGet$episodeRunTime();
+    public void realmSet$episodeRunTime(String value);
+    public String realmGet$firstAirDate();
+    public void realmSet$firstAirDate(String value);
+    public RealmList<com.example.bajob.movieshatch.Pojo.Genre> realmGet$genres();
+    public void realmSet$genres(RealmList<com.example.bajob.movieshatch.Pojo.Genre> value);
+    public String realmGet$homepage();
+    public void realmSet$homepage(String value);
+    public Integer realmGet$id();
+    public void realmSet$id(Integer value);
+    public Boolean realmGet$inProduction();
+    public void realmSet$inProduction(Boolean value);
+    public String realmGet$languages();
+    public void realmSet$languages(String value);
+    public String realmGet$lastAirDate();
+    public void realmSet$lastAirDate(String value);
+    public String realmGet$name();
+    public void realmSet$name(String value);
+    public RealmList<com.example.bajob.movieshatch.Pojo.TvNetwork> realmGet$networks();
+    public void realmSet$networks(RealmList<com.example.bajob.movieshatch.Pojo.TvNetwork> value);
+    public Integer realmGet$numberOfEpisodes();
+    public void realmSet$numberOfEpisodes(Integer value);
+    public Integer realmGet$numberOfSeasons();
+    public void realmSet$numberOfSeasons(Integer value);
+    public String realmGet$originCountry();
+    public void realmSet$originCountry(String value);
+    public String realmGet$originalLanguage();
+    public void realmSet$originalLanguage(String value);
+    public String realmGet$originalName();
+    public void realmSet$originalName(String value);
+    public String realmGet$overview();
+    public void realmSet$overview(String value);
+    public Double realmGet$popularity();
+    public void realmSet$popularity(Double value);
+    public String realmGet$posterPath();
+    public void realmSet$posterPath(String value);
+    public RealmList<com.example.bajob.movieshatch.Pojo.ProductionCompany> realmGet$productionCompanies();
+    public void realmSet$productionCompanies(RealmList<com.example.bajob.movieshatch.Pojo.ProductionCompany> value);
+    public RealmList<com.example.bajob.movieshatch.Pojo.Season> realmGet$seasons();
+    public void realmSet$seasons(RealmList<com.example.bajob.movieshatch.Pojo.Season> value);
+    public String realmGet$status();
+    public void realmSet$status(String value);
+    public String realmGet$type();
+    public void realmSet$type(String value);
+    public Double realmGet$voteAverage();
+    public void realmSet$voteAverage(Double value);
+    public Integer realmGet$voteCount();
+    public void realmSet$voteCount(Integer value);
+}

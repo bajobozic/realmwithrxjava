@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_e7350c11c40e0e37aa5e19cb35a2bd774fe0171f\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\3fb62ade2ccf1f1541ca66ff7c84faa9baa63875\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_cda1d89abe8c0f662ccea6a756c82cf4f81c2b73\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\81d4b7d15d16b2e14cd189ab22581903777fe2ac\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c03bf57f358aa10d253f21989e93bcf6014b3b17">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_27448781b15d1b0d49425615fcb4962d5aec0a1d\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\88ea16d75369fa70080fb9890d622a974ede6041\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="15b049fedbd8e3926bf99d9e45dfc9b2a1043bb9">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_d402ae734810d5215a961f5419b6d5b26d61f799\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\5aac7498d688858a893d7a3ced69a2118bba9d28\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="0fb891e8f0cfba0513043a7bb357513d229ca2cd">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_0c9d4ece664ab73c213f369d7e9d97fcc5510b40\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\7e0c33313fe5326494b3f39b4e210ffa4a4b725b\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="e2719c102dca3a7a5b02ce07f769362da6ddb4ab">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_90be45f4009581a96d8cf714dfe543117fd5eb23\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\6417ea93a8a286e53c2aafc1f0325c056e85a190\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="0d191c1a09e4892d059e5ce749e4ad4e08129e35">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_93e96e28bb82e6aec46daff554e6485d454078c7\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\9ae3cc7eb11497f11b56e0ef1965aeb5f4e09d2f\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="3e04ac8ca644ea7baddf6fdcf72e15c79e9df94a">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_c6bd7795bc2ebc683e49d9b044067e21fd0b7eb4\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\3ea3211ac8cf82e0f3244e3c5c6a5dd5393f62f2\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="a8ae156c2726ac9c56daaf4b49452ec2cdb7bba9">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_5938eec7817ed313bc1d31a3f4ec69fffdf60dd0\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\545dd1efebdd555012166513867ffab09620f78b\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="cd7951e04cfb9a8bf008d544a478d9a8d8192d38">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_530f516751d3694e9d15b77e3b4ed582654a9a9a\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\6aa80dd65894ffb0e071d9fa2f0f69b2db2f2c9e\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c9649557905bf7a80fca9e0d54cbcb7662627860">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_d71a0bd22e6242f4b70f5769a8ba6ba9ee36ccbb\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\0986be3895214d1ce5c20ae1762011162c824de9\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="02741d05d4b697fba5e279e9881aaa1da0ca7c7f">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_b8db08522ff7d5ad2edef89c65415bff9a574264\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\68afc844c2882e3a0f529a46315aafea29da1d30\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="7bde4c34162092e0a77e7f12dc85ed77c484cf5c">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_cb9747327772c0774eb7ba65504ef72124d5b555\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="4d09fccca718e5632552aca7a47d552a5c7b555e">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_4b9288e796e75cbf6e09d6dfe306ce6b19877884\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\bajob\.android\build-cache\b3d3ec2b9a55217d3c68e1ad863379b94c7ba53a\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ecb496cc08dd52551fc5ec6db3bc0632e95a89bb">
+        <dex dex="C:\Users\bajob\AndroidStudioProjects\constraint-layout\MoviesHatch\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_871db3124fe689dbf18440c4bdc9ed280a02eff3\classes.dex" />
+    </item>
+
+</items>

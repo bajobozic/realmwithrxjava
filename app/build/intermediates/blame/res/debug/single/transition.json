@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\transition\\enter_transition.xml",
+        "source": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\src\\main\\res\\transition\\enter_transition.xml"
+    },
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\transition\\change_image_transform.xml",
+        "source": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\src\\main\\res\\transition\\change_image_transform.xml"
+    },
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\transition\\exit_transition.xml",
+        "source": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\src\\main\\res\\transition\\exit_transition.xml"
+    },
+    {
+        "merged": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\build\\intermediates\\res\\merged\\debug\\transition\\change_bounds.xml",
+        "source": "C:\\Users\\bajob\\AndroidStudioProjects\\constraint-layout\\MoviesHatch\\app\\src\\main\\res\\transition\\change_bounds.xml"
+    }
+]
