@@ -15,6 +15,7 @@ import com.example.bajob.movieshatch.DependencyInjection.DaggerActivityComponent
 import com.example.bajob.movieshatch.MvpDetail.DetailPresenter;
 import com.example.bajob.movieshatch.MvpDetail.MvpDetailView;
 import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
@@ -34,6 +35,8 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
     ImageView imageView;
     @BindView(R.id.name)
     TextView textView;
+    @BindView(R.id.image_progress_loader)
+    ProgressBar imageProgressBar;
 
     @BindView(R.id.detail_progress_bar)
     ProgressBar progressBar;
@@ -73,7 +76,6 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
                         .fit()
                         .centerInside()
                         .error(R.mipmap.ic_launcher)
-                        .placeholder(R.mipmap.ic_launcher)
                         .into(imageView);
             }
         }
@@ -114,13 +116,23 @@ public class DetailActivity extends BaseActivity implements MvpDetailView {
     @Override
     public void showData(TvShowDetailedInfo tvShowDetailedInfo) {
         collapsingToolbarLayout.setTitle(tvShowDetailedInfo.getOriginalName());
+        imageProgressBar.setVisibility(View.VISIBLE);
         Picasso.with(this)
                 .load(tvShowDetailedInfo.getPosterPath())
                 .fit()
                 .centerInside()
                 .error(R.mipmap.ic_launcher)
-                .placeholder(R.mipmap.ic_launcher)
-                .into(imageView);
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        imageProgressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        imageProgressBar.setVisibility(View.GONE);
+                    }
+                });
         textView.setText(tvShowDetailedInfo.getOverview());
     }
 

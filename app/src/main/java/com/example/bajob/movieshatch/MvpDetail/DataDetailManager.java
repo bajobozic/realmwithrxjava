@@ -1,13 +1,11 @@
 package com.example.bajob.movieshatch.MvpDetail;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.example.bajob.movieshatch.ActivityScoped;
 import com.example.bajob.movieshatch.Pojo.ImageConfiguration;
 import com.example.bajob.movieshatch.Pojo.TvShowDetailedInfo;
 import com.example.bajob.movieshatch.Retrofit.ApiService;
-import com.squareup.haha.trove.THash;
 
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +38,8 @@ public class DataDetailManager {
         initRealm(showId);
         return showInfoObservable.timeout(timeoutTreshold, TimeUnit.MILLISECONDS, Observable.empty())
                 .observeOn(AndroidSchedulers.mainThread())
-                .concatWith(Observable.zip(apiService.getTvShowDetailedInfo(showId, null, null).flatMap(handleShowErrorResponse()), apiService.getImageConfiguration().flatMap(handleImageErrorResponse()), this::addPosterPath)
+                .concatWith(Observable.zip(apiService.getTvShowDetailedInfo(showId, null, null).flatMap(handleShowErrorResponse()),
+                        apiService.getImageConfiguration().flatMap(handleImageErrorResponse()), this::addPosterPath)
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(this::writeToRealm))
                 .first();
@@ -82,15 +81,22 @@ public class DataDetailManager {
     private TvShowDetailedInfo addPosterPath(Response<TvShowDetailedInfo> t1, Response<ImageConfiguration> t2) {
         try {
             final String baseUrl = t2.body().getImages().getBaseUrl();
-            final String posterSize = t2.body().getImages().getPosterSizes().get(1);
             final String backdropPath = t1.body().getBackdropPath();
-            final String fullPath = baseUrl + posterSize + backdropPath;
+            final String fullPath = baseUrl + getBestPosterSize(t2) + backdropPath;
             t1.body().setPosterPath(fullPath);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return t1.body();
+    }
+
+    private String getBestPosterSize(Response<ImageConfiguration> t2) {
+        String posterSize = "";
+        for (int i = t2.body().getImages().getPosterSizes().size() - 1; i >= 0; --i) {
+            posterSize = t2.body().getImages().getPosterSizes().get(i);
+            break;
+        }
+        return posterSize;
     }
 
 }

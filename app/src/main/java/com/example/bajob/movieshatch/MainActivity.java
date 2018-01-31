@@ -13,7 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -91,6 +90,7 @@ public class MainActivity extends BaseActivity implements TvShowsView {
         searchImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                searchText.setVisibility(View.GONE);
                 final int translationXLeft = searchImage.getWidth() - toolbar.getWidth();
                 if (searchText.getVisibility() == View.GONE) {
                     searchImage.animate().translationX(translationXLeft).setDuration(250).setListener(new Animator.AnimatorListener() {
@@ -136,7 +136,6 @@ public class MainActivity extends BaseActivity implements TvShowsView {
                         public void onAnimationRepeat(Animator animator) {
                         }
                     });
-                    searchText.setVisibility(View.GONE);
                 }
             }
         });
@@ -146,17 +145,10 @@ public class MainActivity extends BaseActivity implements TvShowsView {
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                /*Log.d(TAG, "beforeTextChanged: start "+i);
-                Log.d(TAG, "beforeTextChanged: count "+i1);
-                Log.d(TAG, "beforeTextChanged: after "+i2);*/
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-              /*  Log.d(TAG, "onTextChanged: start "+i);
-                Log.d(TAG, "onTextChanged: before "+i1);
-                Log.d(TAG, "onTextChanged: count "+i2);
-                Log.d(TAG, "onTextChanged: lenght "+charSequence.length());*/
                 if (charSequence.length() <= 2 && i <= charSequence.length()) {
                     presenterImp.resetDefaults();
                     presenterImp.setInSearchMode(false);
